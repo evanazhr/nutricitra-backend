@@ -1,34 +1,33 @@
 import response from "../../../utils/response.js";
 import PredictRepositories from "../repositories/predict-repositories.js";
 import axios from "axios";
+import FormData from "form-data";
 
 export const predictImage = async (req, res, next) => {
-    const userId = req.user.id
-    const file = req.file;
+    const userId = req.user.id;
     try {
-
-        const blob = new Blob([file.buffer], { type: file.mimetype });
+        const file = req.file;
+        if (!file) return res.status(400).json({ message: "No file uploaded" });
 
         const formData = new FormData();
-        formData.append("file", blob, file.originalname);
+        formData.append("file", file.buffer, {
+            filename: file.originalname,
+            contentType: file.mimetype,
+        });
 
-        const predict = await axios.post(process.env.PREDICT_API_URL, formData, {
-            headers : {
-                'Content-Type' : 'multipart/form-data'
-            }
-        })
+        const predictResponse = await axios.post(process.env.PREDICT_API_URL, formData, {
+            headers: { ...formData.getHeaders() },
+        });
 
-        const predictResult = predict.data
+        const result = predictResponse.data; 
+        
+        console.log("Data dari FastAPI:", result);
 
-        const {userId, foodName, imageUrl, confidentScore, protein, calorie} = predictResult.data
-
-        const createLog = await PredictRepositories.createLog({userId, foodName, imageUrl, confidentScore, protein, calorie})
-
-        return response(res, 200, 'Berhasil prediksi gambar', predict.data);
+        return response(res, 200, "Prediksi berhasil", { predict: result });
         
     } catch (error) {
-        console.log(error.response)
-        return next(error)
+        console.error("FastAPI Error:", error.response?.data || error.message);
+        return next(error);
     }
 }
 

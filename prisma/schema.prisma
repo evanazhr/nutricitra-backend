@@ -24,6 +24,7 @@ model User {
 
   authentications Authentication[]
   predictLogs PredictLog[]
+  profile Profile?
 
   @@map("users")
 }
@@ -47,13 +48,32 @@ model PredictLog {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   
+  food_name String
+  image_url String @db.Text
+  confident_score Float
   protein Float
-  carbohydrate Float
-  fat Float
   calorie Float
+  fat Float
+  carbohydrate Float
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@map("predict_logs")
+}
+
+
+model Profile {
+  id     String @id @default(cuid())
+  userId String @unique
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade) 
+
+  height Float
+  weight Float
+  age Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("profiles")
 }

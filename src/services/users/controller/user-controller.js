@@ -47,7 +47,7 @@ export const getUsers = async (req, res, next) => {
 export const updateAvatar = async (req, res, next) => {
   try {
     const file = req.file;
-    const userId = "cmopzuphh00045hv959qmsv0e"; 
+    const userId = req.user.id; 
 
     if (!file) {
         return next(new NotFoundError('File tidak ditemukan'));
