@@ -7,22 +7,22 @@ class AuthenticationRepositories {
 
   async addRefreshToken(userId, token) {
     await this.prisma.authentication.create({
-      data : {
-        userId : userId,
-        token : token
+      data: {
+        userId: userId,
+        token: token
       }
-    })
+    });
   }
 
   async deleteRefreshToken(refreshToken) {
     return await this.prisma.authentication.delete({
-      where : {token : refreshToken}
+      where: { token: refreshToken }
     });
   }
 
   async verifyRefreshToken( token) {
     const result = await this.prisma.authentication.findUnique({
-      where : {token : token}
+      where: { token: token }
     });
 
     if(!result) {
@@ -32,14 +32,13 @@ class AuthenticationRepositories {
     return result;
   }
 
-  async deleteAllRefreshToken(userId){
+  async deleteAllRefreshToken(userId) {
     return await this.prisma.authentication.deleteMany({
-      where : {
-        userId : userId
+      where: {
+        userId: userId
       }
     });
   }
-
 
 }
 

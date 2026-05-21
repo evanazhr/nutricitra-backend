@@ -4,6 +4,13 @@ import AuthenticationRepositories from "../repositories/authentication-repositor
 import { InvariantError, AuthenticationError } from "../../../exceptions/index.js";
 import response from "../../../utils/response.js";
 
+const cookieOptions = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production', 
+  sameSite: 'strict',
+  maxAge: 7 * 24 * 60 * 60 * 1000 
+};
+
 export const login = async (req, res, next) => {
   const { email, password } = req.validated;
 
@@ -19,9 +26,10 @@ export const login = async (req, res, next) => {
     
     await AuthenticationRepositories.addRefreshToken(userId, refreshToken);
     
+    res.cookie('refreshToken', refreshToken, cookieOptions);
+    
     return response(res, 200, 'Authentication berhasil ditambahkan', {
-      accessToken,
-      refreshToken
+      accessToken
     });
   } catch (error) {
     return next(error);
@@ -29,7 +37,11 @@ export const login = async (req, res, next) => {
 };
 
 export const refreshToken = async (req, res, next) => {
-  const { refreshToken } = req.validated;
+  const refreshToken = req.cookies?.refreshToken; 
+
+  if (!refreshToken) {
+    return next(new AuthenticationError('Sesi telah habis, silakan login kembali'));
+  }
 
   try {
     const result = await AuthenticationRepositories.verifyRefreshToken(refreshToken);
@@ -49,7 +61,11 @@ export const refreshToken = async (req, res, next) => {
 };
 
 export const logout = async (req, res, next) => {
-  const { refreshToken } = req.validated;
+  const refreshToken = req.cookies?.refreshToken;
+
+  if (!refreshToken) {
+    return next(new AuthenticationError('Tidak ada sesi yang aktif'));
+  }
 
   try {
     const result = await AuthenticationRepositories.verifyRefreshToken(refreshToken);
@@ -60,20 +76,24 @@ export const logout = async (req, res, next) => {
 
     await AuthenticationRepositories.deleteRefreshToken(refreshToken);
     
-    return response(res, 200, 'Refresh token berhasil dihapus');
+    res.clearCookie('refreshToken');
+    
+    return response(res, 200, 'Berhasil logout');
   } catch (error) {
     return next(error);
   }
 };
 
 export const logoutAllDevices = async (req, res, next) => {
-  const userId = req.user.id;
+  const userId = req.user.id; // Asumsi ini didapat dari middleware auth JWT
 
   try {
     await AuthenticationRepositories.deleteAllRefreshToken(userId);
+
+    res.clearCookie('refreshToken');
 
     return response(res, 200, 'Berhasil logout dari seluruh device');
   } catch (error) {
     return next(error);
   }
-}
+};

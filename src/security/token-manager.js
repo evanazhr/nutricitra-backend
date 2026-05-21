@@ -8,6 +8,7 @@ const TokenManager = {
     try {
       const payload = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_KEY);
       return payload;
+      // eslint-disable-next-line
     }catch (error) {
       throw new InvariantError('Refresh token tidak valid');
     }
@@ -16,6 +17,7 @@ const TokenManager = {
     try {
       const payload = jwt.verify(accessToken, secret);
       return payload;
+      // eslint-disable-next-line
     } catch (error) {
       throw new InvariantError('Access token tidak valid');
     }

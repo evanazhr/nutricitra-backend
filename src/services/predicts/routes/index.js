@@ -6,6 +6,6 @@ import authenticateToken from '../../../middlewares/auth.js';
 const router = Router();
 
 router.get('/predict', authenticateToken, getPredictLogs);
-router.post('/predict', authenticateToken, upload.single('file'),  predictImage)
+router.post('/predict', authenticateToken, upload.single('file'), predictImage);
 
 export default router;

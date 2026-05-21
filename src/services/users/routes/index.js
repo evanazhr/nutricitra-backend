@@ -1,4 +1,4 @@
-import {Router} from 'express'
+import { Router } from 'express';
 import { createUser, getUserById, getUsers, updateAvatar } from '../controller/user-controller.js';
 import { validate } from '../../../middlewares/validate.js';
 import authenticateToken from '../../../middlewares/auth.js';
@@ -13,6 +13,6 @@ router.get('/users', getUsers);
 router.get('/users/:id', getUserById);
 
 // protected routes
-router.put('/users/avatar', authenticateToken, upload.single('avatar'), updateAvatar)
+router.put('/users/avatar', authenticateToken, upload.single('avatar'), updateAvatar);
 
 export default router;
