@@ -5,13 +5,14 @@ class ProfileRepositories {
     this.prisma = prisma;
   }
 
-  async createProfile({ userId, height, weight, age }) {
+  async createProfile({ userId, height, weight, age, gender }) {
     const profile = await this.prisma.profile.create({
       data: {
-        user_id: userId,
+        userId : userId,
         height,
         weight,
-        age
+        age,
+        gender
       }
     });
 
@@ -19,24 +20,25 @@ class ProfileRepositories {
   }
 
   async getProfile(userId) {
-    const profile = await this.prisma.profile.findUnique({
+    const profile = await this.prisma.user.findUnique({
       where: {
-        user_id: userId
+        id: userId
       }
     });
 
     return profile;
   }
 
-  async updateProfile({ userId, height, weight, age }) {
+  async updateProfile({ userId, height, weight, age, gender }) {
     const profile = await this.prisma.profile.update({
       where: {
-        user_id: userId
+        userId: userId
       },
       data: {
         height,
         weight,
-        age
+        age,
+        gender
       }
     });
 

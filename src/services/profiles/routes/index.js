@@ -7,8 +7,8 @@ import { validate } from '../../../middlewares/validate.js';
 const router = Router();
 
 // Protected Routes
-router.post('/profile', authenticateToken, validate(postProfilePayloadSchema), createProfile);
-router.get('/profile', authenticateToken, getProfile);
-router.put('/profile', authenticateToken, validate(putProfilePayloadSchema), updateProfile);
+router.post('/profiles', authenticateToken, validate(postProfilePayloadSchema), createProfile);
+router.get('/profiles', authenticateToken, getProfile);
+router.put('/profiles', authenticateToken, validate(putProfilePayloadSchema), updateProfile);
 
 export default router;
