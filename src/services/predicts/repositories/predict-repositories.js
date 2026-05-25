@@ -5,13 +5,23 @@ class PredictRepositories {
     this.prisma = prisma;
   }
 
-  async getPredictLogs(userId) {
+  async getPredictLogs(userId, skip, take) {
     return await this.prisma.predictLog.findMany({
       where: {
-        userId: userId
+        userId: userId,
       },
+      skip: skip,
+      take: take,
       orderBy: {
         createdAt: 'desc' 
+      }
+    });
+  }
+
+  async countPredictLogs(userId) {
+    return await this.prisma.predictLog.count({
+      where: {
+        userId: userId
       }
     });
   }
@@ -31,13 +41,6 @@ class PredictRepositories {
     });
   }
 
-  async getHistoryByUserId(userId) {
-    return await this.prisma.predictLog.findMany({
-      where: {
-        userId: userId
-      }
-    });
-  }
 }
 
 export default new PredictRepositories();

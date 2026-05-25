@@ -83,10 +83,29 @@ export const predictImage = async (req, res, next) => {
 export const getPredictLogs = async (req, res, next) => {
   const userId = req.user.id;
 
-  try {
-    const predictLogs = await PredictRepositories.getPredictLogs(userId);
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const skip = (page - 1) * limit;
 
-    return response(res, 200, "Predict Logs berhasil ditampilkan", { predictLogs });
+  try {
+    const [predictLogs, totalLogs] = await Promise.all([
+      PredictRepositories.getPredictLogs(userId, skip, limit),
+      PredictRepositories.countPredictLogs(userId)
+    ]);
+    
+    const totalPages = Math.ceil(totalLogs / limit);
+
+    return response(res, 200, "Predict Logs berhasil ditampilkan", { 
+      predictLogs,
+      pagination : {
+        currentPage: page,
+        limit: limit,
+        totalPages,
+        totalData : totalLogs,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1
+      }
+    });
 
   } catch (error) {
     return next(error);
