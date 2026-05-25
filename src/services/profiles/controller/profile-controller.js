@@ -5,10 +5,10 @@ import UserRepositories from "../../users/repositories/user-repositories.js";
 
 export const createProfile = async (req, res, next) => {
   const userId = req.user.id;
-  const { height, weight, age, gender } = req.validated;
+  const { height, weight, age, gender, calorieTarget, proteinTarget, carbohydrateTarget, fatTarget } = req.validated;
 
   try {
-    const profile = await ProfileRepositories.createProfile({ userId, height, weight, age, gender });
+    const profile = await ProfileRepositories.createProfile({ userId, height, weight, age, gender, calorieTarget, proteinTarget, carbohydrateTarget, fatTarget });
         
     if(!profile) {
       return next(new InvariantError("Gagal membuat profile"));
@@ -37,10 +37,10 @@ export const getProfile = async (req, res, next) => {
 
 export const updateProfile = async (req, res, next) => {
   const userId = req.user.id;
-  const { height, weight, age, gender } = req.validated;
+  const { height, weight, age, gender, calorieTarget, proteinTarget, carbohydrateTarget, fatTarget } = req.validated;
 
   try {
-    const profile = await ProfileRepositories.updateProfile({ userId, height, weight, age, gender });
+    const profile = await ProfileRepositories.updateProfile({ userId, height, weight, age, gender, calorieTarget, proteinTarget, carbohydrateTarget, fatTarget });
 
     if (!profile) {
       return next(new NotFoundError("Profile tidak ditemukan"));

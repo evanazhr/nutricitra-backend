@@ -5,14 +5,18 @@ class ProfileRepositories {
     this.prisma = prisma;
   }
 
-  async createProfile({ userId, height, weight, age, gender }) {
+  async createProfile({ userId, height, weight, age, gender, calorieTarget, proteinTarget, carbohydrateTarget, fatTarget }) {
     const profile = await this.prisma.profile.create({
       data: {
         userId : userId,
         height,
         weight,
         age,
-        gender
+        gender,
+        calorieTarget,
+        proteinTarget,
+        carbohydrateTarget,
+        fatTarget
       }
     });
 
@@ -29,7 +33,7 @@ class ProfileRepositories {
     return profile;
   }
 
-  async updateProfile({ userId, height, weight, age, gender }) {
+  async updateProfile({ userId, height, weight, age, gender, calorieTarget, proteinTarget, carbohydrateTarget, fatTarget }) {
     const profile = await this.prisma.profile.update({
       where: {
         userId: userId
@@ -38,7 +42,11 @@ class ProfileRepositories {
         height,
         weight,
         age,
-        gender
+        gender,
+        calorieTarget,
+        proteinTarget,
+        carbohydrateTarget,
+        fatTarget
       }
     });
 

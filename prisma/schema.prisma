@@ -73,6 +73,11 @@ model Profile {
   age Int
   gender String
 
+  calorieTarget Float
+  proteinTarget Float
+  carbohydrateTarget Float
+  fatTarget Float
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
