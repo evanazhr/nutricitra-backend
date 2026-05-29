@@ -8,7 +8,7 @@ class ProfileRepositories {
   async createProfile({ userId, height, weight, age, gender, calorieTarget, proteinTarget, carbohydrateTarget, fatTarget }) {
     const profile = await this.prisma.profile.create({
       data: {
-        userId : userId,
+        userId,
         height,
         weight,
         age,
@@ -27,6 +27,9 @@ class ProfileRepositories {
     const profile = await this.prisma.user.findUnique({
       where: {
         id: userId
+      },
+      include : {
+        profile : true
       }
     });
 
@@ -36,7 +39,7 @@ class ProfileRepositories {
   async updateProfile({ userId, height, weight, age, gender, calorieTarget, proteinTarget, carbohydrateTarget, fatTarget }) {
     const profile = await this.prisma.profile.update({
       where: {
-        userId: userId
+        userId
       },
       data: {
         height,

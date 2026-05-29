@@ -24,14 +24,13 @@ export const predictImage = async (req, res, next) => {
     console.log(result);
 
     const mappingResults = {
-      ...result,
-      ...result.results[0],
-      nutrition: {
-        protein: 100,
-        calorie: 500,
-        carbohydrate: 50,
-        fat: 20
-      },
+        ...result.results[0],
+        nutrition: {
+          protein: 100,
+          calorie: 500,
+          carbohydrate: 50,
+          fat: 20
+        },
     }
 
     if (!mappingResults.food_name) {

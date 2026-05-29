@@ -2,6 +2,8 @@ import { InvariantError, NotFoundError } from "../../../exceptions/index.js";
 import response from "../../../utils/response.js";
 import ProfileRepositories from "../repositories/profile-repositories.js";
 import UserRepositories from "../../users/repositories/user-repositories.js";
+import predictRepositories from "../../predicts/repositories/predict-repositories.js";
+import { calculateBMI } from "../../../utils/index.js";
 
 export const createProfile = async (req, res, next) => {
   const userId = req.user.id;
@@ -24,12 +26,36 @@ export const getProfile = async (req, res, next) => {
   const userId = req.user.id;
   try {
     const profile = await ProfileRepositories.getProfile(userId);
-
+    const totalScans = await predictRepositories.countPredictLogs();
+    
     if (!profile) {
       return next(new NotFoundError("Profile tidak ditemukan"));
     }
+    
+    const {age, gender, height, weight, calorieTarget, carbohydrateTarget, fatTarget, proteinTarget} = profile.profile;
+    
+    const bmi = calculateBMI(height, weight)
 
-    return response(res, 200, "Profile berhasil diambil", { user : profile });
+    const user = {
+      id : profile.id,
+      email : profile.email,
+      fullname : profile.fullname,
+      avatarUrl : profile.avatarUrl,
+      totalScans,
+      height,
+      weight,
+      bmi,
+      age,
+      gender,
+      calorieTarget,
+      carbohydrateTarget,
+      proteinTarget,
+      fatTarget,
+      createdAt : profile.createdAt,
+      updatedAt : profile.updatedAt
+    }
+
+    return response(res, 200, "Profile berhasil diambil", { user });
   } catch (error) {
     return next(error);
   }
