@@ -50,6 +50,9 @@ class ProfileRepositories {
         proteinTarget,
         carbohydrateTarget,
         fatTarget
+      },
+      include : {
+        user : true
       }
     });
 
