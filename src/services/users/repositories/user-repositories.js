@@ -18,10 +18,6 @@ class UserRepositories {
     });   
   }
 
-  async getUsers() {
-    return await this.prisma.user.findMany();
-  }
-
   async getUserById(id) {
     return await this.prisma.user.findUnique({
       where: { id: id }
