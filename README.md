@@ -94,12 +94,6 @@ Mendaftarkan akun pengguna baru.
 }
 ```
 
-### Get All Users
-Mengambil daftar semua pengguna.
-* **Method:** `GET`
-* **Endpoint:** `/users`
-* **Auth Required:** No
-
 ### Get User by ID
 Mengambil detail pengguna berdasarkan ID.
 * **Method:** `GET`
