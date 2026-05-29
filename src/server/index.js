@@ -9,7 +9,9 @@ const app = express();
 app.use(express.json());
 
 const allowedOrigins = [
+  // For Development
   'http://localhost:5173',
+  // For Production
   process.env.FRONTEND_URL
 ].filter(Boolean);
 
