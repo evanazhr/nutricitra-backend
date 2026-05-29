@@ -34,16 +34,6 @@ export const getUserById = async (req, res, next) => {
     }
 }
 
-export const getUsers = async (req, res, next) => {
-    try {
-        const users = await UserRepositories.getUsers();
-
-        return response(res, 200, "User berhasil ditampilkan", {users})        
-    } catch (error) {
-        return next(error)
-    }
-}
-
 export const updateAvatar = async (req, res, next) => {
   try {
     const file = req.file;
