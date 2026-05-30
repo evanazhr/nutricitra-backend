@@ -6,6 +6,7 @@ import FormData from "form-data";
 
 export const predictImage = async (req, res, next) => {
   const userId = req.user.id;
+  const portion = parseFloat(req.body.portion) || 1;
   try {
     const file = req.file;
     if (!file) return res.status(400).json({ message: "No file uploaded" });
@@ -21,20 +22,39 @@ export const predictImage = async (req, res, next) => {
     });
 
     const result = predictResponse.data;
-    console.log(result);
+  
+    const aiResult = result.results[0];
 
-    const mappingResults = {
-        ...result.results[0],
-        nutrition: {
-          protein: 100,
-          calorie: 500,
-          carbohydrate: 50,
-          fat: 20
-        },
+    if (!aiResult || !aiResult.food_name) {
+      return next(new Error("Tidak dapat memprediksi makanan dari gambar"));
     }
 
-    if (!mappingResults.food_name) {
-      return next(new Error("Tidak dapat memprediksi makanan dari gambar"));
+    const foodNutrition = await PredictRepositories.getDataNutrition(aiResult.food_name);
+
+    const mappingResults = {
+        ...aiResult,
+        nutrition: {
+          servingDescription: foodNutrition.servingDescription,
+          servingSizeG: foodNutrition.servingSizeG,
+          calorie: foodNutrition.calorie,
+          protein: foodNutrition.protein,
+          carbohydrate: foodNutrition.carbohydrate,
+          fat: foodNutrition.fat,
+          water: foodNutrition.water,
+          fiber: foodNutrition.fiber,
+          labelCategory: foodNutrition.labelCategory,
+          originRegion: foodNutrition.originRegion,
+          labelCategory: foodNutrition.labelCategory,
+        },
+        portion: portion || 1,
+        totalNutrition : {
+          calorie: foodNutrition.calorie * portion,
+          protein: foodNutrition.protein * portion,
+          carbohydrate: foodNutrition.carbohydrate * portion,
+          fat: foodNutrition.fat * portion,
+          water: foodNutrition.water !== null ? foodNutrition.water * portion : null,
+          fiber: foodNutrition.fiber !== null ? foodNutrition.fiber * portion : null,
+        }
     }
 
     const fileName = `predict-logs-${userId}-${Date.now()}`;
@@ -52,9 +72,6 @@ export const predictImage = async (req, res, next) => {
       .from('food-images')
       .getPublicUrl(filePath);
 
-    console.log("Data dari FastAPI:", mappingResults);
-
-
     await PredictRepositories.createLog({
       userId,
       food_name: mappingResults.food_name,
@@ -63,7 +80,8 @@ export const predictImage = async (req, res, next) => {
       protein: mappingResults.nutrition.protein,
       calorie: mappingResults.nutrition.calorie,
       carbohydrate: mappingResults.nutrition.carbohydrate,
-      fat: mappingResults.nutrition.fat
+      fat: mappingResults.nutrition.fat,
+      portion: mappingResults.portion
     });
 
 
@@ -95,7 +113,6 @@ export const getPredictLogs = async (req, res, next) => {
     const totalPages = Math.ceil(totalLogs / limit);
 
     return response(res, 200, "Predict Logs berhasil ditampilkan", { 
-      predictLogs,
       pagination : {
         currentPage: page,
         limit: limit,
@@ -103,7 +120,8 @@ export const getPredictLogs = async (req, res, next) => {
         totalData : totalLogs,
         hasNextPage: page < totalPages,
         hasPrevPage: page > 1
-      }
+      },
+      predictLogs 
     });
 
   } catch (error) {

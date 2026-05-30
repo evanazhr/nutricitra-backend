@@ -1,8 +1,8 @@
 {
-  "name": "nutriwise-backend",
+  "name": "nutricitra-backend",
   "version": "1.0.0",
   "description": "",
-  "main" : "./src/server.js",
+  "main": "./src/server.js",
   "scripts": {
     "start": "node ./src/server.js",
     "start:dev": "nodemon ./src/server.js",

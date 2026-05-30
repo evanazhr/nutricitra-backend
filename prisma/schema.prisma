@@ -108,7 +108,7 @@ model Meal {
   portion  Float    @default(1.0)
 
   food_name       String
-  image_url       String? @db.Text
+  image_url       String @db.Text
   confident_score Float?
   protein         Float
   calorie         Float
@@ -116,7 +116,24 @@ model Meal {
   carbohydrate    Float
 
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt DateTime @updatedAt 
 
   @@map("meals")
+}
+
+model FoodDictionary {
+  id                  String  @id @default(cuid())
+  foodName            String  @unique  @map("food_name")
+  servingDescription  String? @map("serving_description")
+  servingSizeG        Float?  @map("serving_size_g")
+  fat                 Float
+  calorie             Float   
+  protein             Float
+  carbohydrate        Float
+  water               Float? @map("water")
+  fiber               Float? @map("fiber")
+  labelCategory       String? @map("label_category")
+  originRegion        String? @map("origin_region")
+
+  @@map("food_dictionaries")
 }
