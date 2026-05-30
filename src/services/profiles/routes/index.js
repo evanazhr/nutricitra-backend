@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { createProfile, getProfile, updateProfile } from '../controller/profile-controller.js';
-import { postProfilePayloadSchema, putProfilePayloadSchema } from '../validator/index.js';
+import { postProfilePayloadSchema, putProfilePayloadSchema } from '../validator/schema.js';
 import authenticateToken from '../../../middlewares/auth.js';
 import { validate } from '../../../middlewares/validate.js';
 

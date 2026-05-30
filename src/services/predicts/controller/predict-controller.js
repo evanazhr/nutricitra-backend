@@ -34,7 +34,7 @@ export const predictImage = async (req, res, next) => {
     }
 
     if (!mappingResults.food_name) {
-      return next(new Error("Food name not found in prediction results"));
+      return next(new Error("Tidak dapat memprediksi makanan dari gambar"));
     }
 
     const fileName = `predict-logs-${userId}-${Date.now()}`;

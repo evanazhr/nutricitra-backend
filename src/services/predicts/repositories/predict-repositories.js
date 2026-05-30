@@ -13,7 +13,7 @@ class PredictRepositories {
       skip: skip,
       take: take,
       orderBy: {
-        createdAt: 'desc' 
+        createdAt: 'desc'
       }
     });
   }
