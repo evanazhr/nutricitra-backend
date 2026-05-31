@@ -97,6 +97,7 @@ export const predictImage = async (req, res, next) => {
 
     const responseData = {
       id: predictLog.id,
+      imageUrl: predictLog.imageUrl,
       ...mappingResults,
     }
 

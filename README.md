@@ -200,6 +200,7 @@ Mengunggah gambar makanan untuk diprediksi menggunakan model Machine Learning.
             "foodName": "bubur ayam",
             "confidence": 0.89,
             "portion": 1.5,
+             "imageUrl": "https://rcbxqjotupicnsdobhat.supabase.co/storage/v1/object/public/food-images/food/predict-logs-cmpth1bmb00003342342zatakfh4y-1780214181042",
             "nutrition": {
                 "servingDescription": "1 Porsi (240 g)",
                 "servingSizeG": 240,
