@@ -26,7 +26,6 @@ Melakukan login untuk mendapatkan access token dan refresh token.
   "message": "Authentication berhasil ditambahkan",
   "data": {
     "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6...",
-    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6..."
   }
 }
 ```
@@ -143,7 +142,7 @@ Mengambil profil kesehatan pengguna yang sedang login.
   "status": "success",
   "data": {
     "profile": {
-      "user_id": "uuid-string-here",
+      "userId": "uuid-string-here",
       "height": 175,
       "weight": 65,
       "age": 20,
@@ -187,7 +186,44 @@ Mengunggah gambar makanan untuk diprediksi menggunakan model Machine Learning.
 * **Auth Required:** Yes
 * **Content-Type:** `multipart/form-data`
 * **Request Body:**
-  * `file`: File gambar makanan (JPG/PNG/JPEG)
+* `file`: File gambar makanan (JPG/PNG/JPEG)
+  
+* **Success Response (200 OK):**
+
+```json
+{
+    "status": "success",
+    "message": "Prediksi dan mengirim log berhasil",
+    "data": {
+        "predict": {
+            "id": "cmptzrqne0003432tjl4y3yym",
+            "foodName": "bubur ayam",
+            "confidence": 0.89,
+            "portion": 1.5,
+            "nutrition": {
+                "servingDescription": "1 Porsi (240 g)",
+                "servingSizeG": 240,
+                "calorie": 372,
+                "protein": 27.56,
+                "carbohydrate": 36.12,
+                "fat": 12.39,
+                "water": null,
+                "fiber": null,
+                "labelCategory": null,
+                "originRegion": "Umum"
+            },
+            "totalNutrition": {
+                "calorie": 558,
+                "protein": 41.339999999999996,
+                "carbohydrate": 54.17999999999999,
+                "fat": 18.585,
+                "water": null,
+                "fiber": null
+            }
+        }
+    }
+}
+```
 
 ### Get Predict Logs
 Mengambil riwayat prediksi makanan dari pengguna.
@@ -214,10 +250,10 @@ Mengambil riwayat prediksi makanan dari pengguna.
         "predictLogs": [
             {
                 "id": "cmpthk5w90002f72t29fw3u24",
-                "userId": "cmpth1bmb000004kzatakfh4y",
+                "userId": "cmpth1bmb000004kzatakdsfas4y",
                 "foodName": "nasi padang",
                 "confidenceScore": 0.96,
-                "imageUrl": "https://rcbxqjotupicnsdobhat.supabase.co/storage/v1/object/public/food-images/food/predict-logs-cmpth1bmb000004kzatakfh4y-1780214181042",
+                "imageUrl": "https://rcbxqjotupicnsdobhat.supabase.co/storage/v1/object/public/food-images/food/predict-logs-cmpth1bmb00003342342zatakfh4y-1780214181042",
                 "portion": 1,
                 "createdAt": "2026-05-31T07:56:21.849Z",
                 "updatedAt": "2026-05-31T07:56:21.849Z",

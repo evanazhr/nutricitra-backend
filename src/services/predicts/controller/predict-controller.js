@@ -30,7 +30,6 @@ export const predictImage = async (req, res, next) => {
     }
 
     const foodNutrition = await PredictRepositories.getDataNutrition(aiResult.food_name);
-
     // Satukan hasil mapping data dari AI dan data gizi lokal
     const mappingResults = {
       foodName: aiResult.food_name,
@@ -71,7 +70,7 @@ export const predictImage = async (req, res, next) => {
       .from('food-images')
       .getPublicUrl(filePath);
 
-    await PredictRepositories.createLog({
+    const predictLog = await PredictRepositories.createLog({
       userId,
       foodName: mappingResults.foodName,
       imageUrl: publicUrl,
@@ -96,8 +95,13 @@ export const predictImage = async (req, res, next) => {
       originRegion: mappingResults.nutrition.originRegion
     });
 
+    const responseData = {
+      id: predictLog.id,
+      ...mappingResults,
+    }
+
     return response(res, 200, "Prediksi dan mengirim log berhasil", {
-      predict: mappingResults
+      predict: responseData,
     });
 
   } catch (error) {
