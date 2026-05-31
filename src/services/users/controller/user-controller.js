@@ -14,6 +14,9 @@ export const createUser = async (req, res, next) => {
 
         return response(res, 201, 'User berhasil dibuat', user);
     } catch (error) {
+        if(error.code === 'P2002') {
+            return next(new InvariantError('Email sudah terdaftar'));
+        }
         return next(error);
     }
 }
