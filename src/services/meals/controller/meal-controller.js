@@ -1,4 +1,5 @@
 import { supabase } from "../../../lib/supabase-client.js";
+import { formatMealResponse } from "../../../utils/index.js";
 import response from "../../../utils/response.js";
 import MealRepositories from "../repositories/meal-repositories.js";
 
@@ -16,11 +17,12 @@ export const getMeals = async (req, res, next) => {
             MealRepositories.countMeals(userId)
         ])
 
+        const formattedMeals = meals.map((meal) => formatMealResponse(meal))
+
 
         const totalPages = Math.ceil(totalMeals / limit);
 
         return response(res, 200, "Meals berhasil ditampilkan", {
-            meals,
             pagination: {
                 currentPage: page,
                 limit: limit,
@@ -28,7 +30,8 @@ export const getMeals = async (req, res, next) => {
                 totalData: totalMeals,
                 hasNextPage: page < totalPages,
                 hasPrevPage: page > 1
-            }
+            },
+            meals: formattedMeals
         });
 
     } catch (error) {
@@ -38,13 +41,13 @@ export const getMeals = async (req, res, next) => {
 
 export const createMeal = async (req, res, next) => {
     const userId = req.user.id;
-    const { food_name, mealType, portion, image_url, fat, carbohydrate, protein, calorie, confident_score, predictLogId } = req.validated;
+    const { foodName, mealType, portion, imageUrl, fat, carbohydrate, protein, calorie, water, fiber, confidentScore, predictLogId } = req.validated;
     const imageFile = req.file;
 
     try {
-        let finalImageUrl = image_url || null;
+        let finalImageUrl = imageUrl || null;
 
-        if(imageFile) {
+        if (imageFile) {
             const fileName = `-${userId}-${Date.now()}`;
             const filePath = `food/${fileName}`;
 
@@ -53,9 +56,9 @@ export const createMeal = async (req, res, next) => {
                 .upload(filePath, imageFile.buffer, {
                     contentType: imageFile.mimetype,
                 });
-    
+
             if (error) throw error;
-    
+
             const { data: { publicUrl } } = supabase.storage
                 .from('food-images')
                 .getPublicUrl(filePath);
@@ -64,7 +67,7 @@ export const createMeal = async (req, res, next) => {
         }
 
 
-        const meal = await MealRepositories.createMeal({ userId, food_name, mealType, portion, image_url: finalImageUrl, fat, carbohydrate, protein, calorie, confident_score: null, predictLogId: null });
+        const meal = await MealRepositories.createMeal({ userId, foodName, mealType, portion, imageUrl: finalImageUrl, fat, carbohydrate, protein, calorie, water, fiber, confidentScore: null, predictLogId: null });
 
         if (!meal) {
             return next(new InvariantError("Gagal menambahkan meal"));
@@ -79,10 +82,10 @@ export const createMeal = async (req, res, next) => {
 export const updateMeal = async (req, res, next) => {
     const userId = req.user.id;
     const mealId = req.params.id;
-    const { food_name, mealType, portion, image_url, fat, carbohydrate, protein, calorie, confident_score, predictLogId } = req.validated;
-    
+    const { foodName, mealType, portion, imageUrl, fat, carbohydrate, protein, calorie, water, fiber, confidentScore, predictLogId } = req.validated;
+
     try {
-        const meal = await MealRepositories.updateMeal({ userId, mealId, food_name, mealType, portion, image_url, fat, carbohydrate, protein, calorie, confident_score, predictLogId });
+        const meal = await MealRepositories.updateMeal({ userId, mealId, foodName, mealType, portion, imageUrl, fat, carbohydrate, protein, calorie, water, fiber, confidentScore, predictLogId });
 
         if (!meal) {
             return next(new InvariantError("Gagal memperbarui meal"));
@@ -105,9 +108,9 @@ export const deleteMeal = async (req, res, next) => {
             return next(new InvariantError("Gagal menghapus meal"));
         }
 
-        if(meal.image_url) {
-            const imagePath = meal.image_url.split('/storage/v1/object/public/food-images/')[1];
-            if(imagePath) {
+        if (meal.imageUrl) {
+            const imagePath = meal.imageUrl.split('/storage/v1/object/public/food-images/')[1];
+            if (imagePath) {
                 const { error } = await supabase.storage.from('food-images').remove([imagePath]);
                 if (error) {
                     console.error("Gagal menghapus gambar dari Supabase Storage:", error);

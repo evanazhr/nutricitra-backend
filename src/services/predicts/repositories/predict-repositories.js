@@ -28,7 +28,7 @@ class PredictRepositories {
       }
     });
   }
-        
+
   async countPredictLogs(userId) {
     return await this.prisma.predictLog.count({
       where: {
@@ -37,17 +37,33 @@ class PredictRepositories {
     });
   }
 
-  async createLog({ userId, food_name, image_url, confident_score, protein, calorie, carbohydrate, fat }) {
+  async createLog(data) {
     return await this.prisma.predictLog.create({
       data: {
-        userId: userId,
-        food_name: food_name,
-        image_url: image_url,
-        confident_score: confident_score,
-        protein: protein,
-        calorie: calorie,
-        carbohydrate: carbohydrate,
-        fat: fat
+        userId: data.userId,
+        foodName: data.foodName,
+        imageUrl: data.imageUrl,
+        confidentScore: data.confidentScore,
+        portion: data.portion,
+
+        // Gizi Per Serving
+        calorie: data.calorie,
+        protein: data.protein,
+        carbohydrate: data.carbohydrate,
+        fat: data.fat,
+        water: data.water,
+        fiber: data.fiber,
+
+        // Gizi Total (Per Serving * Portion)
+        totalCalorie: data.totalCalorie,
+        totalProtein: data.totalProtein,
+        totalCarbohydrate: data.totalCarbohydrate,
+        totalFat: data.totalFat,
+        totalWater: data.totalWater,
+        totalFiber: data.totalFiber,
+
+        labelCategory: data.labelCategory,
+        originRegion: data.originRegion
       }
     });
   }

@@ -26,19 +26,26 @@ class MealRepositories {
         });
     }
 
-    async createMeal({ userId, food_name, image_url, mealType, portion, predictLogId, fat, carbohydrate, protein, calorie, confident_score }) {
+    async createMeal({ userId, foodName, imageUrl, mealType, portion, predictLogId, fat, carbohydrate, protein, calorie, water, fiber, confidentScore }) {
         return await this.prisma.meal.create({
             data: {
-                food_name,
-                image_url,
+                foodName,
+                imageUrl,
                 mealType,
                 portion: Number(portion),
                 fat: Number(fat),
                 carbohydrate: Number(carbohydrate),
                 protein: Number(protein),
                 calorie: Number(calorie),
-                confident_score: confident_score ? Number(confident_score) : null,
-                
+                water: water != null ? Number(water) : null,
+                fiber: fiber != null ? Number(fiber) : null,
+                confidentScore: confidentScore ? Number(confidentScore) : null,
+                totalCalorie: Number(calorie) * Number(portion),
+                totalCarbohydrate: Number(carbohydrate) * Number(portion),
+                totalFat: Number(fat) * Number(portion),
+                totalProtein: Number(protein) * Number(portion),
+                totalWater: water != null ? Number(water) * Number(portion) : null,
+                totalFiber: fiber != null ? Number(fiber) * Number(portion) : null,
                 user: {
                     connect: { id: userId }
                 },
@@ -52,22 +59,30 @@ class MealRepositories {
         });
     }
 
-    async updateMeal({ userId, mealId, food_name, image_url, mealType, portion, predictLogId, fat, carbohydrate, protein, calorie, confident_score }) {
+    async updateMeal({ userId, mealId, foodName, imageUrl, mealType, portion, predictLogId, fat, carbohydrate, protein, calorie, water, fiber, confidentScore }) {
         return await this.prisma.meal.update({
             where: {
                 id: mealId,
-                userId: userId 
+                userId: userId
             },
             data: {
-                food_name,
-                image_url,
+                foodName,
+                imageUrl,
                 mealType,
                 portion: Number(portion),
                 fat: Number(fat),
                 carbohydrate: Number(carbohydrate),
                 protein: Number(protein),
                 calorie: Number(calorie),
-                confident_score: confident_score ? Number(confident_score) : null,
+                water: water != null ? Number(water) : null,
+                fiber: fiber != null ? Number(fiber) : null,
+                confidentScore: confidentScore ? Number(confidentScore) : null,
+                totalCalorie: Number(calorie) * Number(portion),
+                totalCarbohydrate: Number(carbohydrate) * Number(portion),
+                totalFat: Number(fat) * Number(portion),
+                totalProtein: Number(protein) * Number(portion),
+                totalWater: water != null ? Number(water) * Number(portion) : null,
+                totalFiber: fiber != null ? Number(fiber) * Number(portion) : null,
 
                 ...(predictLogId ? {
                     predictLog: {
@@ -82,7 +97,7 @@ class MealRepositories {
         return await this.prisma.meal.delete({
             where: {
                 id: mealId,
-                userId: userId 
+                userId: userId
             }
         });
     }

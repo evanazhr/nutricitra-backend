@@ -1,4 +1,5 @@
 import { supabase } from "../../../lib/supabase-client.js";
+import { formatPredictLogResponse } from "../../../utils/index.js";
 import response from "../../../utils/response.js";
 import PredictRepositories from "../repositories/predict-repositories.js";
 import axios from "axios";
@@ -22,7 +23,6 @@ export const predictImage = async (req, res, next) => {
     });
 
     const result = predictResponse.data;
-  
     const aiResult = result.results[0];
 
     if (!aiResult || !aiResult.food_name) {
@@ -31,42 +31,41 @@ export const predictImage = async (req, res, next) => {
 
     const foodNutrition = await PredictRepositories.getDataNutrition(aiResult.food_name);
 
+    // Satukan hasil mapping data dari AI dan data gizi lokal
     const mappingResults = {
-        ...aiResult,
-        nutrition: {
-          servingDescription: foodNutrition.servingDescription,
-          servingSizeG: foodNutrition.servingSizeG,
-          calorie: foodNutrition.calorie,
-          protein: foodNutrition.protein,
-          carbohydrate: foodNutrition.carbohydrate,
-          fat: foodNutrition.fat,
-          water: foodNutrition.water,
-          fiber: foodNutrition.fiber,
-          labelCategory: foodNutrition.labelCategory,
-          originRegion: foodNutrition.originRegion,
-          labelCategory: foodNutrition.labelCategory,
-        },
-        portion: portion || 1,
-        totalNutrition : {
-          calorie: foodNutrition.calorie * portion,
-          protein: foodNutrition.protein * portion,
-          carbohydrate: foodNutrition.carbohydrate * portion,
-          fat: foodNutrition.fat * portion,
-          water: foodNutrition.water !== null ? foodNutrition.water * portion : null,
-          fiber: foodNutrition.fiber !== null ? foodNutrition.fiber * portion : null,
-        }
+      foodName: aiResult.food_name,
+      confidence: aiResult.confidence,
+      portion: portion,
+      nutrition: {
+        servingDescription: foodNutrition?.servingDescription || null,
+        servingSizeG: foodNutrition?.servingSizeG || null,
+        calorie: foodNutrition?.calorie || 0,
+        protein: foodNutrition?.protein || 0,
+        carbohydrate: foodNutrition?.carbohydrate || 0,
+        fat: foodNutrition?.fat || 0,
+        water: foodNutrition?.water || null,
+        fiber: foodNutrition?.fiber || null,
+        labelCategory: foodNutrition?.labelCategory || null,
+        originRegion: foodNutrition?.originRegion || null,
+      },
+      totalNutrition: {
+        calorie: (foodNutrition?.calorie || 0) * portion,
+        protein: (foodNutrition?.protein || 0) * portion,
+        carbohydrate: (foodNutrition?.carbohydrate || 0) * portion,
+        fat: (foodNutrition?.fat || 0) * portion,
+        water: foodNutrition?.water !== null ? foodNutrition.water * portion : null,
+        fiber: foodNutrition?.fiber !== null ? foodNutrition.fiber * portion : null,
+      }
     }
 
     const fileName = `predict-logs-${userId}-${Date.now()}`;
     const filePath = `food/${fileName}`;
 
-    const { data, error } = await supabase.storage
-      .from('food-images') 
-      .upload(filePath, file.buffer, {
-        contentType: file.mimetype,
-      });
+    const { error: storageError } = await supabase.storage
+      .from('food-images')
+      .upload(filePath, file.buffer, { contentType: file.mimetype });
 
-    if (error) throw error;
+    if (storageError) throw storageError;
 
     const { data: { publicUrl } } = supabase.storage
       .from('food-images')
@@ -74,21 +73,31 @@ export const predictImage = async (req, res, next) => {
 
     await PredictRepositories.createLog({
       userId,
-      food_name: mappingResults.food_name,
-      image_url: publicUrl,
-      confident_score: mappingResults.confidence,
-      protein: mappingResults.nutrition.protein,
+      foodName: mappingResults.foodName,
+      imageUrl: publicUrl,
+      confidentScore: mappingResults.confidence,
+      portion: mappingResults.portion,
+
       calorie: mappingResults.nutrition.calorie,
+      protein: mappingResults.nutrition.protein,
       carbohydrate: mappingResults.nutrition.carbohydrate,
       fat: mappingResults.nutrition.fat,
-      portion: mappingResults.portion
+      water: mappingResults.nutrition.water,
+      fiber: mappingResults.nutrition.fiber,
+
+      totalCalorie: mappingResults.totalNutrition.calorie,
+      totalProtein: mappingResults.totalNutrition.protein,
+      totalCarbohydrate: mappingResults.totalNutrition.carbohydrate,
+      totalFat: mappingResults.totalNutrition.fat,
+      totalWater: mappingResults.totalNutrition.water,
+      totalFiber: mappingResults.totalNutrition.fiber,
+
+      labelCategory: mappingResults.nutrition.labelCategory,
+      originRegion: mappingResults.nutrition.originRegion
     });
 
-
     return response(res, 200, "Prediksi dan mengirim log berhasil", {
-      predict: {
-        ...mappingResults
-      }
+      predict: mappingResults
     });
 
   } catch (error) {
@@ -99,7 +108,6 @@ export const predictImage = async (req, res, next) => {
 
 export const getPredictLogs = async (req, res, next) => {
   const userId = req.user.id;
-
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
   const skip = (page - 1) * limit;
@@ -109,22 +117,26 @@ export const getPredictLogs = async (req, res, next) => {
       PredictRepositories.getPredictLogs(userId, skip, limit),
       PredictRepositories.countPredictLogs(userId)
     ]);
-    
+
     const totalPages = Math.ceil(totalLogs / limit);
 
-    return response(res, 200, "Predict Logs berhasil ditampilkan", { 
-      pagination : {
+    // format data predictLogs agar lebih rapi dan mudah dipahami di response
+    const formattedLogs = predictLogs.map(log => formatPredictLogResponse(log));
+
+    return response(res, 200, "Predict Logs berhasil ditampilkan", {
+      pagination: {
         currentPage: page,
         limit: limit,
         totalPages,
-        totalData : totalLogs,
+        totalData: totalLogs,
         hasNextPage: page < totalPages,
         hasPrevPage: page > 1
       },
-      predictLogs 
+      predictLogs: formattedLogs
     });
 
   } catch (error) {
     return next(error);
   }
 };
+
