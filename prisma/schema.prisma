@@ -153,3 +153,22 @@ model FoodDictionary {
 
   @@map("food_dictionaries")
 }
+
+model AkgReference {
+  id                   Int    @id @default(autoincrement())
+  ageLabel             String 
+  ageMinMonths         Int    @map("usia_min_bulan")
+  ageMaxMonths         Int    @map("usia_max_bulan")
+  gender               Int    // 0 = Laki-laki, 1 = Perempuan
+  pregnancyTrimester1  Int    @map("hamil_1_13")
+  pregnancyTrimester2  Int    @map("hamil_14_27")
+  pregnancyTrimester3  Int    @map("hamil_28_41")
+  breastfeedingFirst6m Int    @map("menyusui_6bl_pertama")
+  breastfeedingSecond6m Int   @map("menyusui_6bl_kedua")
+  calories             Int    @map("energi_kkal")
+  protein              Float  @map("protein_g")       
+  fat                  Float  @map("lemak_total_g")   
+  carbohydrate         Int    @map("karbohidrat_g")
+
+  @@map("akg_references")
+}

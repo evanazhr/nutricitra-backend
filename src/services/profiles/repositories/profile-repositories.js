@@ -1,7 +1,7 @@
 import { prisma } from "../../../lib/prisma.js";
 
 class ProfileRepositories {
-  constructor () {
+  constructor() {
     this.prisma = prisma;
   }
 
@@ -28,8 +28,8 @@ class ProfileRepositories {
       where: {
         id: userId
       },
-      include : {
-        profile : true
+      include: {
+        profile: true
       }
     });
 
@@ -51,13 +51,29 @@ class ProfileRepositories {
         carbohydrateTarget,
         fatTarget
       },
-      include : {
-        user : true
+      include: {
+        user: true
       }
     });
 
     return profile;
-  }  
+  }
+
+  async getDefaultAkgData({ ageMinMonths, ageMaxMonths, gender, pregnancyTrimester1, pregnancyTrimester2, pregnancyTrimester3, breastfeedingFirst6m, breastfeedingSecond6m }) {
+    const akgData = await this.prisma.akgReference.findMany({
+      where: {
+        ageMinMonths: { lte: ageMinMonths },
+        ageMaxMonths: { gte: ageMaxMonths },
+        gender,
+        pregnancyTrimester1,
+        pregnancyTrimester2,
+        pregnancyTrimester3,
+        breastfeedingFirst6m,
+        breastfeedingSecond6m
+      }
+    });
+    return akgData;
+  }
 }
 
 export default new ProfileRepositories();
