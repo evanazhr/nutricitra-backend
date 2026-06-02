@@ -39,7 +39,6 @@ class ProfileRepositories {
   }
 
   async updateProfile({ userId, height, weight, age, gender, calorieTarget, proteinTarget, carbohydrateTarget, fatTarget, pregnancyTrimester, breastfeedingStage }) {
-    // Cukup gunakan satu query upsert untuk menangani Create atau Update sekaligus
     const profile = await this.prisma.profile.upsert({
       where: {
         userId: userId, 

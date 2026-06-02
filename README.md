@@ -150,7 +150,8 @@ Mengambil profil kesehatan pengguna yang sedang login.
       "calorieTarget": 2000,
       "proteinTarget": 120,
       "carbohydrateTarget": 200,
-      "fatTarget": 100
+      "fatTarget": 100,
+      "isProfileComplete" :true
     }
   }
 }
