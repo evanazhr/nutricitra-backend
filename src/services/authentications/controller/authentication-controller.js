@@ -37,7 +37,7 @@ export const login = async (req, res, next) => {
     }
     
     return response(res, 200, 'Authentication berhasil ditambahkan', {
-      accessToken,
+      accessToken
     });
   } catch (error) {
     return next(error);

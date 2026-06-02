@@ -5,7 +5,7 @@ import predictRepositories from "../../predicts/repositories/predict-repositorie
 import { calculateBMI } from "../../../utils/index.js";
 
 const formatProfileResponse = (userWithProfile, totalScans) => {
-  const { age, gender, height, weight, calorieTarget, carbohydrateTarget, fatTarget, proteinTarget } = userWithProfile.profile || {};
+  const { age, gender, height, weight, breastfeedingStage, pregnancyTrimester, calorieTarget, carbohydrateTarget, fatTarget, proteinTarget } = userWithProfile.profile || {};
 
   const bmi = calculateBMI(height, weight);
 
@@ -20,6 +20,8 @@ const formatProfileResponse = (userWithProfile, totalScans) => {
     bmi: bmi ? bmi : 0,
     age: age || 0,
     gender: gender || "Unspecified",
+    pregnancyTrimester: pregnancyTrimester || 0,
+    breastfeedingStage: breastfeedingStage || 0,
     calorieTarget: calorieTarget || 0,
     carbohydrateTarget: carbohydrateTarget || 0,
     proteinTarget: proteinTarget || 0,
@@ -32,17 +34,25 @@ const formatProfileResponse = (userWithProfile, totalScans) => {
 
 export const createProfile = async (req, res, next) => {
   const userId = req.user.id;
-  const { height, weight, age, gender, calorieTarget, proteinTarget, carbohydrateTarget, fatTarget } = req.validated;
+  const { height, weight, age, gender, calorieTarget, proteinTarget, carbohydrateTarget, fatTarget, pregnancyTrimester, breastfeedingStage } = req.validated;
 
   try {
-    const profile = await ProfileRepositories.createProfile({ userId, height, weight, age, gender, calorieTarget, proteinTarget, carbohydrateTarget, fatTarget });
+    const profile = await ProfileRepositories.createProfile({ userId, height, weight, age, gender, calorieTarget, proteinTarget, carbohydrateTarget, fatTarget, pregnancyTrimester, breastfeedingStage });
 
     if (!profile) {
       return next(new InvariantError("Gagal membuat profile"));
     }
 
-    return response(res, 201, "Profile berhasil dibuat", { user: profile });
+    const getProfileData = await ProfileRepositories.getProfile(userId);
+    const totalScans = await predictRepositories.countPredictLogs(userId);
+
+    const user = formatProfileResponse(getProfileData, totalScans);
+
+    return response(res, 201, "Profile berhasil dibuat", { user });
   } catch (error) {
+    if(error.code === 'P2002') {
+      return next(new InvariantError("Profile untuk user ini sudah ada"));
+    }
     return next(error);
   }
 };
@@ -72,10 +82,10 @@ export const getProfile = async (req, res, next) => {
 
 export const updateProfile = async (req, res, next) => {
   const userId = req.user.id;
-  const { height, weight, age, gender, calorieTarget, proteinTarget, carbohydrateTarget, fatTarget } = req.validated;
+  const { height, weight, age, gender, calorieTarget, proteinTarget, carbohydrateTarget, fatTarget, pregnancyTrimester, breastfeedingStage } = req.validated;
 
   try {
-    const isUpdated = await ProfileRepositories.updateProfile({ userId, height, weight, age, gender, calorieTarget, proteinTarget, carbohydrateTarget, fatTarget });
+    const isUpdated = await ProfileRepositories.updateProfile({ userId, height, weight, age, gender, calorieTarget, proteinTarget, carbohydrateTarget, fatTarget, pregnancyTrimester, breastfeedingStage });
 
     if (!isUpdated) {
       return next(new NotFoundError("Profile tidak ditemukan"));
@@ -94,7 +104,7 @@ export const updateProfile = async (req, res, next) => {
 
 export const getDefaultAkgData = async (req, res, next) => {
   try {
-    const { age, gender, pregnancyTrimester, breastfeedingStatus } = req.validated;
+    const { age, gender, pregnancyTrimester, breastfeedingStage } = req.validated;
 
     const calculatedMonths = Math.floor(age * 12);
 
@@ -112,8 +122,8 @@ export const getDefaultAkgData = async (req, res, next) => {
       if (pregnancyTrimester === 2) queryFlags.pregnancyTrimester2 = 1;
       if (pregnancyTrimester === 3) queryFlags.pregnancyTrimester3 = 1;
 
-      if (breastfeedingStatus === 1) queryFlags.breastfeedingFirst6m = 1;
-      if (breastfeedingStatus === 2) queryFlags.breastfeedingSecond6m = 1;
+      if (breastfeedingStage === 1) queryFlags.breastfeedingFirst6m = 1;
+      if (breastfeedingStage === 2) queryFlags.breastfeedingSecond6m = 1;
     }
 
     const targetAkg = await ProfileRepositories.getDefaultAkgData({
