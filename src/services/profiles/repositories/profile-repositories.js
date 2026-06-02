@@ -37,11 +37,12 @@ class ProfileRepositories {
   }
 
   async updateProfile({ userId, height, weight, age, gender, calorieTarget, proteinTarget, carbohydrateTarget, fatTarget }) {
-    const profile = await this.prisma.profile.update({
+    // Cukup gunakan satu query upsert untuk menangani Create atau Update sekaligus
+    const profile = await this.prisma.profile.upsert({
       where: {
-        userId
+        userId: userId, 
       },
-      data: {
+      update: {
         height,
         weight,
         age,
@@ -49,11 +50,22 @@ class ProfileRepositories {
         calorieTarget,
         proteinTarget,
         carbohydrateTarget,
-        fatTarget
+        fatTarget,
+      },
+      create: {
+        userId, 
+        height,
+        weight,
+        age,
+        gender,
+        calorieTarget,
+        proteinTarget,
+        carbohydrateTarget,
+        fatTarget,
       },
       include: {
-        user: true
-      }
+        user: true, 
+      },
     });
 
     return profile;

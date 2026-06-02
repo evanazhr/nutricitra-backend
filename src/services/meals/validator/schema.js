@@ -31,6 +31,5 @@ export const putMealPayloadSchema = Joi.object({
 });
 
 export const getRecommendationMealsQuerySchema = Joi.object({
-   sisaKuota : Joi.number().positive().required(),
-   kaloriMakanan: Joi.number().positive().required()
+   recentMealCalorie: Joi.number().positive().required()
 });

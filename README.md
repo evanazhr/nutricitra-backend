@@ -1,4 +1,4 @@
-# 📚 NutriWise API Documentation
+# 📚 Nutri Citra API Documentation
 
 Dokumentasi ini berisi daftar *endpoint* yang tersedia pada backend aplikasi. 
 Secara *default*, semua *request* dan *response* menggunakan `Content-Type: application/json` kecuali disebutkan secara spesifik. (misalnya, `multipart/form-data` untuk *upload file*).
@@ -443,35 +443,36 @@ Meminta rekomendasi makanan berdasarkan sisa kuota kalori dan kalori makanan yan
     "data": {
         "meals": {
             "dataAnalysis": {
-                "remainingUserQuota": 500,
-                "newMealCalories": 327,
+                "remainingUserQuota": 1000,
+                "calorieTarget": 2000,
+                "recentMealCalorie": 500,
                 "selectedLabelCategory": 1,
                 "categoryName": "Serat Tinggi & Kalori Sedang"
             },
             "fruitRecommendations": [
                 {
-                    "foodName": "Duku",
-                    "calories": 63,
+                    "name": "Sirsak",
+                    "calories": 65,
                     "protein": 1,
+                    "carbohydrate": 16.3,
+                    "fat": 0.3,
+                    "water": 81.7
+                },
+                {
+                    "name": "Menteng",
+                    "calories": 65,
+                    "protein": 1.7,
                     "carbohydrate": 16.1,
-                    "fat": 0.2,
-                    "water": 82
+                    "fat": 0.3,
+                    "water": 79
                 },
                 {
-                    "foodName": "Jeruk banjar",
-                    "calories": 61,
-                    "protein": 0.8,
-                    "carbohydrate": 14.1,
+                    "name": "Mangga golek",
+                    "calories": 63,
+                    "protein": 0.5,
+                    "carbohydrate": 16.7,
                     "fat": 0.2,
-                    "water": 84.5
-                },
-                {
-                    "foodName": "Salak pondoh",
-                    "calories": 87,
-                    "protein": 0.8,
-                    "carbohydrate": 20.1,
-                    "fat": 0.4,
-                    "water": 77.9
+                    "water": 82.2
                 }
             ]
         }

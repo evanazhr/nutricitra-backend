@@ -3,6 +3,9 @@ import { supabase } from "../../../lib/supabase-client.js";
 import { formatMealResponse } from "../../../utils/index.js";
 import response from "../../../utils/response.js";
 import MealRepositories from "../repositories/meal-repositories.js";
+import NutritionRepositories from "../../nutrition/repositories/nutrition-repositories.js";
+import ProfileRepositories from "../../profiles/repositories/profile-repositories.js";
+import InvariantError from "../../../exceptions/invariant-error.js";
 
 export const getMeals = async (req, res, next) => {
     const userId = req.user.id;
@@ -41,10 +44,10 @@ export const getMeals = async (req, res, next) => {
 }
 
 export const createMeal = async (req, res, next) => {
-    const userId = req.user.id;
+    const userId = req.user?.id;
     const { foodName, mealType, portion, imageUrl, fat, carbohydrate, protein, calorie, water, fiber, confidentScore, predictLogId } = req.validated;
     const imageFile = req.file;
-
+    
     try {
         let finalImageUrl = imageUrl || null;
 
@@ -128,16 +131,24 @@ export const deleteMeal = async (req, res, next) => {
 
 export const getRecomendationMeals = async (req, res, next) => {
     const userId = req.user.id;
-
-    const { sisaKuota, kaloriMakanan } = req.validated;
+    const { recentMealCalorie } = req.validated;
 
     try {
-        const resposense = await axios.post(process.env.RECOMENDATION_MEAL_API_URL, {
-            sisa_kuota: sisaKuota,
-            kalori_makanan: kaloriMakanan
+        const dailySummary = await NutritionRepositories.getDailySummary(userId);
+        const profile = await ProfileRepositories.getProfile(userId);
+
+        const calorieConsumed = dailySummary?._sum?.totalCalorie || 0;
+        const calorieTarget = profile.profile.calorieTarget || 0;
+
+        const remainingUserQuota = calorieTarget - calorieConsumed;
+
+
+        const mealResponse = await axios.post(process.env.RECOMENDATION_MEAL_API_URL, {
+            sisa_kuota: remainingUserQuota,
+            kalori_makanan: recentMealCalorie
         });
 
-        const meals = resposense.data;
+        const meals = mealResponse.data;
 
         if (!meals) {
             return next(new NotFoundError("Rekomendasi meal tidak ditemukan"));
@@ -146,12 +157,13 @@ export const getRecomendationMeals = async (req, res, next) => {
         const mappedMeals = {
             dataAnalysis: {
                 remainingUserQuota: meals.data_analisis.sisa_kuota_user,
-                newMealCalories: meals.data_analisis.kalori_makanan_baru,
+                calorieTarget: calorieTarget,
+                recentMealCalorie: meals.data_analisis.kalori_makanan_baru,
                 selectedLabelCategory: meals.data_analisis.label_kategori_terpilih,
                 categoryName: meals.data_analisis.nama_kategori
             },
             fruitRecommendations: meals.rekomendasi_buah.map((item) => ({
-                foodName: item.nama,
+                name: item.nama,
                 calories: item.energi_kcal,
                 protein: item.protein_g,
                 carbohydrate: item.karbohidrat_g,
@@ -162,6 +174,12 @@ export const getRecomendationMeals = async (req, res, next) => {
 
         return response(res, 200, "Rekomendasi meal berhasil ditampilkan", { meals: mappedMeals });
     } catch (error) {
+
+        if (error.response) {
+            console.error("Error response from recommendation API:", error.response.data);
+            return next(new InvariantError("Gagal mendapatkan rekomendasi meal dari API eksternal"));
+        }
+
         return next(error);
     }
 }

@@ -29,6 +29,7 @@ class MealRepositories {
     async createMeal({ userId, foodName, imageUrl, mealType, portion, predictLogId, fat, carbohydrate, protein, calorie, water, fiber, confidentScore }) {
         return await this.prisma.meal.create({
             data: {
+                userId,
                 foodName,
                 imageUrl,
                 mealType,
@@ -46,9 +47,6 @@ class MealRepositories {
                 totalProtein: Number(protein) * Number(portion),
                 totalWater: water != null ? Number(water) * Number(portion) : null,
                 totalFiber: fiber != null ? Number(fiber) * Number(portion) : null,
-                user: {
-                    connect: { id: userId }
-                },
 
                 ...(predictLogId ? {
                     predictLog: {
