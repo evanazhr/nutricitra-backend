@@ -175,6 +175,44 @@ Memperbarui profil kesehatan pengguna.
 }
 ```
 
+
+### Get Akg Reference Data
+Mengambil data dari referensi akg untuk data profil kesehatan pengguna.
+* **Method:** `get`
+* **Endpoint:** `/profiles/default-akg`
+* **Auth Required:** Yes
+* **Request Query:**
+  * age : number
+  * gender : string (male or female)
+  * pregnancyTrimester : number (0, 1, 2 ,3)
+  * breastfeedingStatus : number (0, 1, 2)
+
+* **Success Response (200 ok):**
+```json
+{
+    "status": "success",
+    "message": "Data referensi target AKG gizi berhasil diambil",
+    "data": {
+        "akg": {
+            "id": 11,
+            "ageLabel": "10-12 years",
+            "ageMinMonths": 120,
+            "ageMaxMonths": 155,
+            "gender": 0,
+            "pregnancyTrimester1": 0,
+            "pregnancyTrimester2": 0,
+            "pregnancyTrimester3": 0,
+            "breastfeedingFirst6m": 0,
+            "breastfeedingSecond6m": 0,
+            "calories": 2000,
+            "protein": 50,
+            "fat": 65,
+            "carbohydrate": 300
+        }
+    }
+}
+```
+
 ---
 
 ## 🍎 4. Predicts
@@ -383,6 +421,61 @@ Menghapus catatan makanan berdasarkan ID.
 {
   "status": "success",
   "message": "Meal berhasil dihapus"
+}
+```
+
+### Get Recomendation Meals
+Meminta rekomendasi makanan berdasarkan sisa kuota kalori dan kalori makanan yang baru ditambahkan.
+* **Method:** `GET`
+* **Endpoint:** `/meals/recomendations`
+* **Auth Required:** Yes
+* **Response Query:**
+  *  sisaKuota : number       // sisa Kuota kalori harian
+  *  kaloriMakanan : number   // kalori makanan yang baru ditambahkan
+
+
+* **Success Response (200 OK):**
+
+``json
+{
+    "status": "success",
+    "message": "Rekomendasi meal berhasil ditampilkan",
+    "data": {
+        "meals": {
+            "dataAnalysis": {
+                "remainingUserQuota": 500,
+                "newMealCalories": 327,
+                "selectedLabelCategory": 1,
+                "categoryName": "Serat Tinggi & Kalori Sedang"
+            },
+            "fruitRecommendations": [
+                {
+                    "foodName": "Duku",
+                    "calories": 63,
+                    "protein": 1,
+                    "carbohydrate": 16.1,
+                    "fat": 0.2,
+                    "water": 82
+                },
+                {
+                    "foodName": "Jeruk banjar",
+                    "calories": 61,
+                    "protein": 0.8,
+                    "carbohydrate": 14.1,
+                    "fat": 0.2,
+                    "water": 84.5
+                },
+                {
+                    "foodName": "Salak pondoh",
+                    "calories": 87,
+                    "protein": 0.8,
+                    "carbohydrate": 20.1,
+                    "fat": 0.4,
+                    "water": 77.9
+                }
+            ]
+        }
+    }
 }
 ```
 

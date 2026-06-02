@@ -1,3 +1,4 @@
+import axios from "axios";
 import { supabase } from "../../../lib/supabase-client.js";
 import { formatMealResponse } from "../../../utils/index.js";
 import response from "../../../utils/response.js";
@@ -119,6 +120,47 @@ export const deleteMeal = async (req, res, next) => {
         }
 
         return response(res, 200, "Meal berhasil dihapus", meal);
+    } catch (error) {
+        return next(error);
+    }
+
+}
+
+export const getRecomendationMeals = async (req, res, next) => {
+    const userId = req.user.id;
+
+    const { sisaKuota, kaloriMakanan } = req.validated;
+
+    try {
+        const resposense = await axios.post(process.env.RECOMENDATION_MEAL_API_URL, {
+            sisa_kuota: sisaKuota,
+            kalori_makanan: kaloriMakanan
+        });
+
+        const meals = resposense.data;
+
+        if (!meals) {
+            return next(new NotFoundError("Rekomendasi meal tidak ditemukan"));
+        }
+
+        const mappedMeals = {
+            dataAnalysis: {
+                remainingUserQuota: meals.data_analisis.sisa_kuota_user,
+                newMealCalories: meals.data_analisis.kalori_makanan_baru,
+                selectedLabelCategory: meals.data_analisis.label_kategori_terpilih,
+                categoryName: meals.data_analisis.nama_kategori
+            },
+            fruitRecommendations: meals.rekomendasi_buah.map((item) => ({
+                foodName: item.nama,
+                calories: item.energi_kcal,
+                protein: item.protein_g,
+                carbohydrate: item.karbohidrat_g,
+                fat: item.lemak_g,
+                water: item.air_persen
+            })),
+        };
+
+        return response(res, 200, "Rekomendasi meal berhasil ditampilkan", { meals: mappedMeals });
     } catch (error) {
         return next(error);
     }

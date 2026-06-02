@@ -29,3 +29,8 @@ export const putMealPayloadSchema = Joi.object({
     water: Joi.number().min(0).allow(null).optional(),
     fiber: Joi.number().min(0).allow(null).optional()
 });
+
+export const getRecommendationMealsQuerySchema = Joi.object({
+   sisaKuota : Joi.number().positive().required(),
+   kaloriMakanan: Joi.number().positive().required()
+});
