@@ -27,9 +27,17 @@ export const login = async (req, res, next) => {
     await AuthenticationRepositories.addRefreshToken(userId, refreshToken);
     
     res.cookie('refreshToken', refreshToken, cookieOptions);
+
+    // check profile completeness
+    const user = await UserRepositories.getUserById(userId);
+    if (!user.profile) {
+      return response(res, 200, 'Authentication berhasil ditambahkan, namun profil Anda belum lengkap. Silakan lengkapi profil Anda untuk pengalaman terbaik.', {
+        accessToken,
+      });
+    }
     
     return response(res, 200, 'Authentication berhasil ditambahkan', {
-      accessToken
+      accessToken,
     });
   } catch (error) {
     return next(error);

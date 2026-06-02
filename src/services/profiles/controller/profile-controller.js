@@ -25,7 +25,8 @@ const formatProfileResponse = (userWithProfile, totalScans) => {
     proteinTarget: proteinTarget || 0,
     fatTarget: fatTarget || 0,
     createdAt: userWithProfile.createdAt,
-    updatedAt: userWithProfile.updatedAt
+    updatedAt: userWithProfile.updatedAt,
+    isProfileComplete: !!userWithProfile.profile
   };
 };
 
@@ -54,13 +55,16 @@ export const getProfile = async (req, res, next) => {
       predictRepositories.countPredictLogs(userId)
     ]);
 
+
     if (!profileData) {
       return next(new NotFoundError("Profile tidak ditemukan"));
     }
 
     const user = formatProfileResponse(profileData, totalScans);
 
-    return response(res, 200, "Profile berhasil diambil", { user });
+    return response(res, 200, "Profile berhasil diambil", {
+      user
+    });
   } catch (error) {
     return next(error);
   }
@@ -119,10 +123,10 @@ export const getDefaultAkgData = async (req, res, next) => {
     });
 
     if (!targetAkg || targetAkg.length === 0) {
-      return next(new NotFoundError("Data referensi target AKG gizi tidak ditemukan untuk profil yang diberikan"));s
+      return next(new NotFoundError("Data referensi target AKG gizi tidak ditemukan untuk profil yang diberikan")); s
     }
 
-    return response(res, 200, "Data referensi target AKG gizi berhasil diambil", {akg: targetAkg[0]});
+    return response(res, 200, "Data referensi target AKG gizi berhasil diambil", { akg: targetAkg[0] });
 
   } catch (error) {
     next(error);

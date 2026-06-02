@@ -87,6 +87,9 @@ model Profile {
   age    Int
   gender String
 
+  pregnancyTrimester Int? @default(0) @map("pregnancy_trimester") // 0: Tidak hamil, 1: Tri 1, 2: Tri 2, 3: Tri 3
+  breastfeedingStage Int? @default(0) @map("breastfeeding_stage") // 0: Tidak menyusui, 1: <6 bulan, 2: 6-12 bulan
+
   calorieTarget      Float @map("calorie_target")
   proteinTarget      Float @map("protein_target")
   carbohydrateTarget Float @map("carbohydrate_target")
