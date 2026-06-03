@@ -1,9 +1,9 @@
 import rateLimit from 'express-rate-limit';
 
-// Global rate limiter untuk mengamankan seluruh API dari spam/DDoS
+// Global rate limiter
 export const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 menit
-  max: 100, // Batas maksimal 100 request per IP dalam 15 menit
+  max: 60, // Batas maksimal 60 request per IP dalam 15 menit
   message: {
     status: 'error',
     message: 'Terlalu banyak permintaan dari IP ini, silakan coba lagi setelah 15 menit'
@@ -12,11 +12,10 @@ export const globalLimiter = rateLimit({
   legacyHeaders: false, // Menonaktifkan header `X-RateLimit-*`
 });
 
-// Auth rate limiter yang lebih ketat untuk endpoint sensitif (login, register)
-// untuk mencegah serangan brute-force
+// Auth rate limiter
 export const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 menit
-  max: 5, // Batas maksimal 5 kali percobaan login/register per IP
+  max: 10, // Batas maksimal 10 kali percobaan login/register per IP
   message: {
     status: 'error',
     message: 'Terlalu banyak percobaan login atau register, silakan coba lagi setelah 15 menit'

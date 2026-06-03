@@ -4,9 +4,14 @@ import errorHandler from '../middlewares/error.js';
 import router from '../routes/index.js';
 import cors from 'cors';
 
+import { globalLimiter } from '../middlewares/rateLimiter.js';
+
 const app = express();
 
 app.use(express.json());
+
+// global limiter
+app.use(globalLimiter);
 
 const allowedOrigins = [
   // For Development
@@ -27,6 +32,8 @@ app.use(cors({
   },
   credentials: true
 }));
+
+app.set('trust proxy', 1);
 
 app.use('/', router);
 

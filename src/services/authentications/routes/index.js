@@ -4,6 +4,8 @@ import { deleteAuthenticationPayloadSchema, putAuthenticationPayloadSchema, post
 import { validate } from "../../../middlewares/validate.js";
 import authenticateToken from "../../../middlewares/auth.js";
 
+import { authLimiter } from "../../../middlewares/rateLimiter.js";
+
 const router = Router();
 
 // public routes
@@ -11,14 +13,14 @@ const router = Router();
 // POST   /authentications            → Login
 // PUT    /authentications            → Refresh access token
 
-router.post('/authentications', validate(postAuthenticationPayloadSchema), login );
-router.put('/authentications', validate(putAuthenticationPayloadSchema), refreshToken );
+router.post('/authentications', authLimiter, validate(postAuthenticationPayloadSchema), login);
+router.put('/authentications', validate(putAuthenticationPayloadSchema), refreshToken);
 
 // protected routes
 // AUTHENTICATIONS:
 // DELETE /authentications            → Logout
 
-router.delete('/authentications', authenticateToken, validate(deleteAuthenticationPayloadSchema), logout);
-router.delete('/authentications/all', authenticateToken, validate(deleteAuthenticationPayloadSchema), logoutAllDevices);
+router.delete('/authentications', authenticateToken, authLimiter, validate(deleteAuthenticationPayloadSchema), logout);
+router.delete('/authentications/all', authenticateToken, authLimiter, validate(deleteAuthenticationPayloadSchema), logoutAllDevices);
 
 export default router;
