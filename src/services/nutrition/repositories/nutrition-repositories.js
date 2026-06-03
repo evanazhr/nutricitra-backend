@@ -58,6 +58,8 @@ class NutritionRepositories {
                 totalProtein: true,
                 totalCarbohydrate: true,
                 totalFat: true,
+                totalWater: true,
+                totalFiber: true,
                 createdAt: true,
             },
             orderBy: {
