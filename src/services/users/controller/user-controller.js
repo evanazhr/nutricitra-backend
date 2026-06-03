@@ -21,19 +21,20 @@ export const createUser = async (req, res, next) => {
     }
 }
 
-export const getUserById = async (req, res, next) => {
-    const {id} = req.params;
+export const updateFullnameUser = async (req, res, next) => {
+    const { fullname } = req.validated;
+    const userId = req.user.id;
 
     try {
-        const user = await UserRepositories.getUserById(id);
+        const user = await UserRepositories.updateFullnameUser({userId, fullname});
 
         if(!user) {
-            return next(new NotFoundError("User tidak ditemukan"));
+            return next(new NotFoundError('User tidak ditemukan'));
         }
 
-        return response(res, 200, "User berhasil ditampilkan", user)
+        return response(res, 200, "Nama lengkap berhasil diupdate", user);
     } catch (error) {
-        return next(error)
+        return next(error);
     }
 }
 

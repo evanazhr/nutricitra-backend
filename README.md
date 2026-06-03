@@ -93,11 +93,17 @@ Mendaftarkan akun pengguna baru.
 }
 ```
 
-### Get User by ID
-Mengambil detail pengguna berdasarkan ID.
-* **Method:** `GET`
-* **Endpoint:** `/users/:id`
-* **Auth Required:** No
+### Update fullname User
+Mengupdate fullname pengguna.
+* **Method:** `PUT`
+* **Endpoint:** `/users/fullname`
+* **Auth Required:** Yes
+* **Request Body:**
+```json
+{
+  "fullname": "John Doe",
+}
+```
 
 ### Update Avatar
 Memperbarui foto profil pengguna (Avatar).
@@ -151,7 +157,7 @@ Mengambil profil kesehatan pengguna yang sedang login.
       "proteinTarget": 120,
       "carbohydrateTarget": 200,
       "fatTarget": 100,
-      "isProfileComplete" :true
+      "isProfileComplete" : true
     }
   }
 }
@@ -437,7 +443,7 @@ Meminta rekomendasi makanan berdasarkan sisa kuota kalori dan kalori makanan yan
 
 * **Success Response (200 OK):**
 
-``json
+```json
 {
     "status": "success",
     "message": "Rekomendasi meal berhasil ditampilkan",
@@ -506,4 +512,78 @@ Mengambil ringkasan total nutrisi harian pengguna yang sedang login.
     }
   }
 }
+```
+
+# Get Weekly Summary 
+Mengambil ringkasan total nutrisi mingguan pengguna yang sedang login.
+* **Method:** `GET`
+* **Endpoint:** `/nutrition/weekly-summary`
+* **Auth Required:** Yes
+* **Success Response (200 OK):**
+```json
+{
+    "status": "success",
+    "message": "Ringkasan konsumsi grafik mingguan berhasil dimuat",
+    "data": {
+        "nutrition": [
+            {
+                "date": "2026-05-27",
+                "dayName": "Kamis",
+                "calorie": 0,
+                "protein": 0,
+                "carbohydrate": 0,
+                "fat": 0
+            },
+            {
+                "date": "2026-05-28",
+                "dayName": "Jumat",
+                "calorie": 0,
+                "protein": 0,
+                "carbohydrate": 0,
+                "fat": 0
+            },
+            {
+                "date": "2026-05-29",
+                "dayName": "Sabtu",
+                "calorie": 0,
+                "protein": 0,
+                "carbohydrate": 0,
+                "fat": 0
+            },
+            {
+                "date": "2026-05-30",
+                "dayName": "Minggu",
+                "calorie": 500,
+                "protein": 100,
+                "carbohydrate": 200,
+                "fat": 100
+            },
+            {
+                "date": "2026-05-31",
+                "dayName": "Senin",
+                "calorie": 1000,
+                "protein": 200,
+                "carbohydrate": 400,
+                "fat": 200
+            },
+            {
+                "date": "2026-06-01",
+                "dayName": "Selasa",
+                "calorie": 0,
+                "protein": 0,
+                "carbohydrate": 0,
+                "fat": 0
+            },
+            {
+                "date": "2026-06-02",
+                "dayName": "Rabu",
+                "calorie": 1000,
+                "protein": 200,
+                "carbohydrate": 400,
+                "fat": 200
+            }
+        ]
+    }
+}
+
 ```

@@ -17,3 +17,12 @@ export const postUserPayloadSchema = Joi.object({
     'any.required': 'Kata sandi wajib diisi',
   }),
 });
+
+
+export const updateFullnamePayloadSchema = Joi.object({
+  fullname: Joi.string().max(100).required().messages({
+    'string.max': 'Nama lengkap tidak boleh lebih dari 100 karakter',
+    'string.empty': 'Nama lengkap tidak boleh kosong',
+    'any.required': 'Nama lengkap wajib diisi',
+  }),
+});

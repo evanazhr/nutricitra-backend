@@ -24,9 +24,9 @@ class UserRepositories {
     });
   }
 
-  async updateUser({ id, fullname }) {
+  async updateFullnameUser({ userId, fullname }) {
     return await this.prisma.user.update({
-      where: { id: id },
+      where: { id: userId },
       data: {
         fullname: fullname,
       }

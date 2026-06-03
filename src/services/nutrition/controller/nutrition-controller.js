@@ -24,3 +24,51 @@ export const getDailySummary = async (req, res, next) => {
         return next(error);
     }
 };
+
+
+export const getWeeklySummary = async (req, res, next) => {
+    const userId = req.user.id;
+
+    try {
+        const { meals, startOfPeriod } = await NutritionRepositories.getWeeklySummary(userId);
+
+        const weeklyMap = {};
+        const daysName = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+
+        for (let i = 0; i < 7; i++) {
+            const date = new Date(startOfPeriod);
+            date.setDate(startOfPeriod.getDate() + i);
+
+            const dateString = date.toISOString().split('T')[0];
+
+            weeklyMap[dateString] = {
+                date: dateString,
+                dayName: daysName[date.getDay()],
+                calorie: 0,
+                protein: 0,
+                carbohydrate: 0,
+                fat: 0
+            };
+        }
+
+        meals.forEach((meal) => {
+            const mealDateStr = new Date(meal.createdAt).toISOString().split('T')[0];
+
+            if (weeklyMap[mealDateStr]) {
+                weeklyMap[mealDateStr].calorie += meal.totalCalorie || 0;
+                weeklyMap[mealDateStr].protein += meal.totalProtein || 0;
+                weeklyMap[mealDateStr].carbohydrate += meal.totalCarbohydrate || 0;
+                weeklyMap[mealDateStr].fat += meal.totalFat || 0;
+            }
+        });
+
+        const chartData = Object.values(weeklyMap);
+
+        return response(res, 200, "Ringkasan konsumsi grafik mingguan berhasil dimuat", {
+            nutrition: chartData
+        });
+
+    } catch (error) {
+        return next(error);
+    }
+};
