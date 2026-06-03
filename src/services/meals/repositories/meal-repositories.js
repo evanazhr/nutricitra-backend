@@ -26,7 +26,7 @@ class MealRepositories {
         });
     }
 
-    async createMeal({ userId, foodName, imageUrl, mealType, portion, predictLogId, fat, carbohydrate, protein, calorie, water, fiber, confidentScore }) {
+    async createMeal({ userId, foodName, imageUrl, mealType, portion, predictLogId, fat, carbohydrate, protein, calorie, water, fiber, confidentScore, servingSizeG, servingDescription }) {
         return await this.prisma.meal.create({
             data: {
                 userId,
@@ -40,6 +40,8 @@ class MealRepositories {
                 calorie: Number(calorie),
                 water: water != null ? Number(water) : null,
                 fiber: fiber != null ? Number(fiber) : null,
+                servingSizeG: servingSizeG != null ? Number(servingSizeG) : null,
+                servingDescription: servingDescription || null,
                 confidentScore: confidentScore ? Number(confidentScore) : null,
                 totalCalorie: Number(calorie) * Number(portion),
                 totalCarbohydrate: Number(carbohydrate) * Number(portion),
@@ -57,7 +59,7 @@ class MealRepositories {
         });
     }
 
-    async updateMeal({ userId, mealId, foodName, imageUrl, mealType, portion, predictLogId, fat, carbohydrate, protein, calorie, water, fiber, confidentScore }) {
+    async updateMeal({ userId, mealId, foodName, imageUrl, mealType, portion, predictLogId, fat, carbohydrate, protein, calorie, water, fiber, confidentScore, servingSizeG, servingDescription }) {
         return await this.prisma.meal.update({
             where: {
                 id: mealId,
@@ -74,6 +76,8 @@ class MealRepositories {
                 calorie: Number(calorie),
                 water: water != null ? Number(water) : null,
                 fiber: fiber != null ? Number(fiber) : null,
+                servingSizeG: servingSizeG != null ? Number(servingSizeG) : null,
+                servingDescription: servingDescription || null,
                 confidentScore: confidentScore ? Number(confidentScore) : null,
                 totalCalorie: Number(calorie) * Number(portion),
                 totalCarbohydrate: Number(carbohydrate) * Number(portion),

@@ -47,6 +47,8 @@ class PredictRepositories {
         portion: data.portion,
 
         // Gizi Per Serving
+        servingSizeG: data.servingSizeG,
+        servingDescription: data.servingDescription,
         calorie: data.calorie,
         protein: data.protein,
         carbohydrate: data.carbohydrate,

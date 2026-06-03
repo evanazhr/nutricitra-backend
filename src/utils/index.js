@@ -27,6 +27,8 @@ export const formatPredictLogResponse = (log) => {
     createdAt: log.createdAt,
     updatedAt: log.updatedAt,
     nutrition: {
+      servingSizeG: log.servingSizeG,
+      servingDescription: log.servingDescription,
       calorie: log.calorie,
       protein: log.protein,
       carbohydrate: log.carbohydrate,
@@ -61,6 +63,8 @@ export const formatMealResponse = (meal) => {
     createdAt: meal.createdAt,
     updatedAt: meal.updatedAt,
     nutrition: {
+      servingSizeG: meal.servingSizeG,
+      servingDescription: meal.servingDescription,
       calorie: meal.calorie,
       protein: meal.protein,
       carbohydrate: meal.carbohydrate,

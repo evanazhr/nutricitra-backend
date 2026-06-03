@@ -45,14 +45,14 @@ export const getMeals = async (req, res, next) => {
 
 export const createMeal = async (req, res, next) => {
     const userId = req.user?.id;
-    const { foodName, mealType, portion, imageUrl, fat, carbohydrate, protein, calorie, water, fiber, confidentScore, predictLogId } = req.validated;
+    const { foodName, mealType, portion, imageUrl, fat, carbohydrate, protein, calorie, water, fiber, confidentScore, predictLogId, servingSizeG, servingDescription } = req.validated;
     const imageFile = req.file;
     
     try {
         let finalImageUrl = imageUrl || null;
 
         if (imageFile) {
-            const fileName = `-${userId}-${Date.now()}`;
+            const fileName = `meal-logs-${userId}-${Date.now()}`;
             const filePath = `food/${fileName}`;
 
             const { data, error } = await supabase.storage
@@ -71,7 +71,7 @@ export const createMeal = async (req, res, next) => {
         }
 
 
-        const meal = await MealRepositories.createMeal({ userId, foodName, mealType, portion, imageUrl: finalImageUrl, fat, carbohydrate, protein, calorie, water, fiber, confidentScore: null, predictLogId: null });
+        const meal = await MealRepositories.createMeal({ userId, foodName, mealType, portion, imageUrl: finalImageUrl, fat, carbohydrate, protein, calorie, water, fiber, confidentScore: null, predictLogId: null, servingSizeG, servingDescription });
 
         if (!meal) {
             return next(new InvariantError("Gagal menambahkan meal"));
@@ -86,10 +86,32 @@ export const createMeal = async (req, res, next) => {
 export const updateMeal = async (req, res, next) => {
     const userId = req.user.id;
     const mealId = req.params.id;
-    const { foodName, mealType, portion, imageUrl, fat, carbohydrate, protein, calorie, water, fiber, confidentScore, predictLogId } = req.validated;
+    const { foodName, mealType, portion, imageUrl, fat, carbohydrate, protein, calorie, water, fiber, confidentScore, predictLogId, servingSizeG, servingDescription } = req.validated;
+    const imageFile = req.file;
 
     try {
-        const meal = await MealRepositories.updateMeal({ userId, mealId, foodName, mealType, portion, imageUrl, fat, carbohydrate, protein, calorie, water, fiber, confidentScore, predictLogId });
+        let finalImageUrl = imageUrl || null;
+
+        if (imageFile) {
+            const fileName = `meal-logs-${userId}-${Date.now()}`;
+            const filePath = `food/${fileName}`;
+
+            const { data, error } = await supabase.storage
+                .from('food-images')
+                .upload(filePath, imageFile.buffer, {
+                    contentType: imageFile.mimetype,
+                });
+
+            if (error) throw error;
+
+            const { data: { publicUrl } } = supabase.storage
+                .from('food-images')
+                .getPublicUrl(filePath);
+
+            finalImageUrl = publicUrl;
+        }
+
+        const meal = await MealRepositories.updateMeal({ userId, mealId, foodName, mealType, portion, imageUrl: finalImageUrl, fat, carbohydrate, protein, calorie, water, fiber, confidentScore, predictLogId, servingSizeG, servingDescription });
 
         if (!meal) {
             return next(new InvariantError("Gagal memperbarui meal"));

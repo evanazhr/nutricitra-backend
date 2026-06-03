@@ -12,7 +12,9 @@ export const postMealPayloadSchema = Joi.object({
     protein: Joi.number().positive().required(),
     calorie: Joi.number().positive().required(),
     water: Joi.number().min(0).allow(null).optional(),
-    fiber: Joi.number().min(0).allow(null).optional()
+    fiber: Joi.number().min(0).allow(null).optional(),
+    servingSizeG: Joi.number().min(0).allow(null).optional(),
+    servingDescription: Joi.string().allow(null, '').optional()
 });
 
 export const putMealPayloadSchema = Joi.object({
@@ -27,7 +29,9 @@ export const putMealPayloadSchema = Joi.object({
     protein: Joi.number().positive().required(),
     calorie: Joi.number().positive().required(),
     water: Joi.number().min(0).allow(null).optional(),
-    fiber: Joi.number().min(0).allow(null).optional()
+    fiber: Joi.number().min(0).allow(null).optional(),
+    servingSizeG: Joi.number().min(0).allow(null).optional(),
+    servingDescription: Joi.string().allow(null, '').optional()
 });
 
 export const getRecommendationMealsQuerySchema = Joi.object({

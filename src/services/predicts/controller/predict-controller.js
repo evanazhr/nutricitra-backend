@@ -77,6 +77,9 @@ export const predictImage = async (req, res, next) => {
       confidentScore: mappingResults.confidence,
       portion: mappingResults.portion,
 
+      servingSizeG: mappingResults.nutrition.servingSizeG,
+      servingDescription: mappingResults.nutrition.servingDescription,
+
       calorie: mappingResults.nutrition.calorie,
       protein: mappingResults.nutrition.protein,
       carbohydrate: mappingResults.nutrition.carbohydrate,

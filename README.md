@@ -1,41 +1,91 @@
 # 📚 Nutri Citra API Documentation
 
-Dokumentasi ini berisi daftar *endpoint* yang tersedia pada backend aplikasi. 
-Secara *default*, semua *request* dan *response* menggunakan `Content-Type: application/json` kecuali disebutkan secara spesifik. (misalnya, `multipart/form-data` untuk *upload file*).
+Dokumentasi ini berisi daftar *endpoint* yang tersedia pada backend aplikasi Nutri Citra. 
+Secara *default*, semua *request* dan *response* menggunakan `Content-Type: application/json` kecuali disebutkan secara spesifik (misalnya, `multipart/form-data` untuk *upload file*).
+
+---
+
+## 🚀 Setup Project
+
+Berikut adalah langkah-langkah untuk menjalankan *project* ini secara lokal:
+
+1. **Clone repositori**
+   ```bash
+   git clone https://github.com/evanazhr/nutricitra-backend.git
+   ```
+
+2. **Masuk ke direktori**
+   ```bash
+   cd nutricitra-backend
+   ```
+
+3. **Install dependensi**
+   ```bash
+   pnpm install
+   ```
+
+4. **Konfigurasi Environment**
+   Buat file `.env` dari `.env.example`:
+   ```bash
+   cp .env.example .env
+   ```
+   *Pastikan Anda membaca file `.env` dan mengisi variabel environment yang dibutuhkan.*
+
+5. **Jalankan Aplikasi**
+   ```bash
+   pnpm run dev
+   ```
+
+---
+
+## 📑 Table of Contents
+
+1. [Authentication](#-1-authentication)
+2. [Users](#-2-users)
+3. [Profiles](#-3-profiles)
+4. [Predicts](#-4-predicts)
+5. [Meals](#-5-meals)
+6. [Nutrition](#-6-nutrition)
 
 ---
 
 ## 🔐 1. Authentication
 
 ### Login User
-Melakukan login untuk mendapatkan access token dan refresh token.
-* **Method:** `POST`
-* **Endpoint:** `/authentications`
-* **Auth Required:** No
-* **Request Body:**
+Melakukan login untuk mendapatkan *access token* dan *refresh token*.
+
+- **Method:** `POST`
+- **Endpoint:** `/authentications`
+- **Auth Required:** No
+
+**Request Body:**
 ```json
 {
   "email": "john@example.com",
   "password": "Password123!"
 }
 ```
-* **Success Response (201 Created):**
+
+**Success Response (201 Created):**
 ```json
 {
   "status": "success",
   "message": "Authentication berhasil ditambahkan",
   "data": {
     "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6...",
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6..."
   }
 }
 ```
 
 ### Refresh Token
-Memperbarui access token menggunakan refresh token.
-* **Method:** `PUT`
-* **Endpoint:** `/authentications`
-* **Auth Required:** No
-* **Request Body:**
+Memperbarui *access token* menggunakan *refresh token*.
+
+- **Method:** `PUT`
+- **Endpoint:** `/authentications`
+- **Auth Required:** No
+
+**Request Body:**
 ```json
 {
   "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6..."
@@ -43,11 +93,13 @@ Memperbarui access token menggunakan refresh token.
 ```
 
 ### Logout User
-Menghapus refresh token pengguna pada *device* saat ini.
-* **Method:** `DELETE`
-* **Endpoint:** `/authentications`
-* **Auth Required:** Yes
-* **Request Body:**
+Menghapus *refresh token* pengguna pada *device* saat ini.
+
+- **Method:** `DELETE`
+- **Endpoint:** `/authentications`
+- **Auth Required:** Yes
+
+**Request Body:**
 ```json
 {
   "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6..."
@@ -55,11 +107,13 @@ Menghapus refresh token pengguna pada *device* saat ini.
 ```
 
 ### Logout All Devices
-Menghapus seluruh refresh token pengguna pada semua *device*.
-* **Method:** `DELETE`
-* **Endpoint:** `/authentications/all`
-* **Auth Required:** Yes
-* **Request Body:**
+Menghapus seluruh *refresh token* pengguna pada semua *device*.
+
+- **Method:** `DELETE`
+- **Endpoint:** `/authentications/all`
+- **Auth Required:** Yes
+
+**Request Body:**
 ```json
 {
   "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6..."
@@ -72,10 +126,12 @@ Menghapus seluruh refresh token pengguna pada semua *device*.
 
 ### Register User
 Mendaftarkan akun pengguna baru.
-* **Method:** `POST`
-* **Endpoint:** `/users`
-* **Auth Required:** No
-* **Request Body:**
+
+- **Method:** `POST`
+- **Endpoint:** `/users`
+- **Auth Required:** No
+
+**Request Body:**
 ```json
 {
   "fullname": "John Doe",
@@ -83,7 +139,8 @@ Mendaftarkan akun pengguna baru.
   "password": "Password123!"
 }
 ```
-* **Success Response (201 Created):**
+
+**Success Response (201 Created):**
 ```json
 {
   "status": "success",
@@ -93,26 +150,30 @@ Mendaftarkan akun pengguna baru.
 }
 ```
 
-### Update fullname User
-Mengupdate fullname pengguna.
-* **Method:** `PUT`
-* **Endpoint:** `/users/fullname`
-* **Auth Required:** Yes
-* **Request Body:**
+### Update Fullname User
+Mengupdate nama lengkap pengguna.
+
+- **Method:** `PUT`
+- **Endpoint:** `/users/fullname`
+- **Auth Required:** Yes
+
+**Request Body:**
 ```json
 {
-  "fullname": "John Doe",
+  "fullname": "John Doe"
 }
 ```
 
 ### Update Avatar
 Memperbarui foto profil pengguna (Avatar).
-* **Method:** `PUT`
-* **Endpoint:** `/users/avatar`
-* **Auth Required:** Yes
-* **Content-Type:** `multipart/form-data`
-* **Request Body:**
-  * `avatar`: File gambar (JPG/PNG/JPEG)
+
+- **Method:** `PUT`
+- **Endpoint:** `/users/avatar`
+- **Auth Required:** Yes
+- **Content-Type:** `multipart/form-data`
+
+**Request Body:**
+- `avatar`: File gambar (JPG/PNG/JPEG)
 
 ---
 
@@ -120,10 +181,12 @@ Memperbarui foto profil pengguna (Avatar).
 
 ### Create Profile
 Membuat profil kesehatan pengguna baru.
-* **Method:** `POST`
-* **Endpoint:** `/profiles`
-* **Auth Required:** Yes
-* **Request Body:**
+
+- **Method:** `POST`
+- **Endpoint:** `/profiles`
+- **Auth Required:** Yes
+
+**Request Body:**
 ```json
 {
   "height": 175,
@@ -139,10 +202,12 @@ Membuat profil kesehatan pengguna baru.
 
 ### Get Profile
 Mengambil profil kesehatan pengguna yang sedang login.
-* **Method:** `GET`
-* **Endpoint:** `/profiles`
-* **Auth Required:** Yes
-* **Success Response (200 OK):**
+
+- **Method:** `GET`
+- **Endpoint:** `/profiles`
+- **Auth Required:** Yes
+
+**Success Response (200 OK):**
 ```json
 {
   "status": "success",
@@ -157,7 +222,7 @@ Mengambil profil kesehatan pengguna yang sedang login.
       "proteinTarget": 120,
       "carbohydrateTarget": 200,
       "fatTarget": 100,
-      "isProfileComplete" : true
+      "isProfileComplete": true
     }
   }
 }
@@ -165,10 +230,12 @@ Mengambil profil kesehatan pengguna yang sedang login.
 
 ### Update Profile
 Memperbarui profil kesehatan pengguna.
-* **Method:** `PUT`
-* **Endpoint:** `/profiles`
-* **Auth Required:** Yes
-* **Request Body:**
+
+- **Method:** `PUT`
+- **Endpoint:** `/profiles`
+- **Auth Required:** Yes
+
+**Request Body:**
 ```json
 {
   "height": 178,
@@ -182,41 +249,42 @@ Memperbarui profil kesehatan pengguna.
 }
 ```
 
-
 ### Get Akg Reference Data
-Mengambil data dari referensi akg untuk data profil kesehatan pengguna.
-* **Method:** `get`
-* **Endpoint:** `/profiles/default-akg`
-* **Auth Required:** Yes
-* **Request Query:**
-  * age : number
-  * gender : string (male or female)
-  * pregnancyTrimester : number (0, 1, 2 ,3)
-  * breastfeedingStatus : number (0, 1, 2)
+Mengambil data referensi AKG untuk melengkapi profil kesehatan pengguna.
 
-* **Success Response (200 ok):**
+- **Method:** `GET`
+- **Endpoint:** `/profiles/default-akg`
+- **Auth Required:** Yes
+
+**Query Parameters:**
+- `age` (number)
+- `gender` (string: `male` / `female`)
+- `pregnancyTrimester` (number: `0`, `1`, `2`, `3`)
+- `breastfeedingStatus` (number: `0`, `1`, `2`)
+
+**Success Response (200 OK):**
 ```json
 {
-    "status": "success",
-    "message": "Data referensi target AKG gizi berhasil diambil",
-    "data": {
-        "akg": {
-            "id": 11,
-            "ageLabel": "10-12 years",
-            "ageMinMonths": 120,
-            "ageMaxMonths": 155,
-            "gender": 0,
-            "pregnancyTrimester1": 0,
-            "pregnancyTrimester2": 0,
-            "pregnancyTrimester3": 0,
-            "breastfeedingFirst6m": 0,
-            "breastfeedingSecond6m": 0,
-            "calories": 2000,
-            "protein": 50,
-            "fat": 65,
-            "carbohydrate": 300
-        }
+  "status": "success",
+  "message": "Data referensi target AKG gizi berhasil diambil",
+  "data": {
+    "akg": {
+      "id": 11,
+      "ageLabel": "10-12 years",
+      "ageMinMonths": 120,
+      "ageMaxMonths": 155,
+      "gender": 0,
+      "pregnancyTrimester1": 0,
+      "pregnancyTrimester2": 0,
+      "pregnancyTrimester3": 0,
+      "breastfeedingFirst6m": 0,
+      "breastfeedingSecond6m": 0,
+      "calories": 2000,
+      "protein": 50,
+      "fat": 65,
+      "carbohydrate": 300
     }
+  }
 }
 ```
 
@@ -225,105 +293,109 @@ Mengambil data dari referensi akg untuk data profil kesehatan pengguna.
 ## 🍎 4. Predicts
 
 ### Predict Image
-Mengunggah gambar makanan untuk diprediksi menggunakan model Machine Learning.
-* **Method:** `POST`
-* **Endpoint:** `/predict`
-* **Auth Required:** Yes
-* **Content-Type:** `multipart/form-data`
-* **Request Body:**
-* `file`: File gambar makanan (JPG/PNG/JPEG)
-  
-* **Success Response (200 OK):**
+Mengunggah gambar makanan untuk diprediksi menggunakan model *Machine Learning*.
 
+- **Method:** `POST`
+- **Endpoint:** `/predict`
+- **Auth Required:** Yes
+- **Content-Type:** `multipart/form-data`
+
+**Request Body:**
+- `file`: File gambar makanan (JPG/PNG/JPEG)
+
+**Success Response (200 OK):**
 ```json
 {
-    "status": "success",
-    "message": "Prediksi dan mengirim log berhasil",
-    "data": {
-        "predict": {
-            "id": "cmptzrqne0003432tjl4y3yym",
-            "foodName": "bubur ayam",
-            "confidence": 0.89,
-            "portion": 1.5,
-             "imageUrl": "https://rcbxqjotupicnsdobhat.supabase.co/storage/v1/object/public/food-images/food/predict-logs-cmpth1bmb00003342342zatakfh4y-1780214181042",
-            "nutrition": {
-                "servingDescription": "1 Porsi (240 g)",
-                "servingSizeG": 240,
-                "calorie": 372,
-                "protein": 27.56,
-                "carbohydrate": 36.12,
-                "fat": 12.39,
-                "water": null,
-                "fiber": null,
-                "labelCategory": null,
-                "originRegion": "Umum"
-            },
-            "totalNutrition": {
-                "calorie": 558,
-                "protein": 41.339999999999996,
-                "carbohydrate": 54.17999999999999,
-                "fat": 18.585,
-                "water": null,
-                "fiber": null
-            }
-        }
+  "status": "success",
+  "message": "Prediksi dan mengirim log berhasil",
+  "data": {
+    "predict": {
+      "id": "cmptzrqne0003432tjl4y3yym",
+      "foodName": "bubur ayam",
+      "confidence": 0.89,
+      "portion": 1.5,
+      "imageUrl": "https://rcbxqjotupicnsdobhat.supabase.co/...",
+      "nutrition": {
+        "servingDescription": "1 Porsi (240 g)",
+        "servingSizeG": 240,
+        "calorie": 372,
+        "protein": 27.56,
+        "carbohydrate": 36.12,
+        "fat": 12.39,
+        "water": null,
+        "fiber": null,
+        "labelCategory": null,
+        "originRegion": "Umum"
+      },
+      "totalNutrition": {
+        "calorie": 558,
+        "protein": 41.34,
+        "carbohydrate": 54.18,
+        "fat": 18.59,
+        "water": null,
+        "fiber": null
+      }
     }
+  }
 }
 ```
 
 ### Get Predict Logs
 Mengambil riwayat prediksi makanan dari pengguna.
-* **Method:** `GET`
-* **Endpoint:** `/predict`
-* **Auth Required:** Yes
-* **Query Parameters:**
-  * `page` (optional): Nomor halaman, default: 1
-  * `limit` (optional): Jumlah data per halaman, default: 10
-* **Success Response (200 OK):**
+
+- **Method:** `GET`
+- **Endpoint:** `/predict`
+- **Auth Required:** Yes
+
+**Query Parameters:**
+- `page` (optional): Nomor halaman, default `1`
+- `limit` (optional): Jumlah data per halaman, default `10`
+
+**Success Response (200 OK):**
 ```json
 {
-    "status": "success",
-    "message": "Predict Logs berhasil ditampilkan",
-    "data": {
-        "pagination": {
-            "currentPage": 1,
-            "limit": 10,
-            "totalPages": 1,
-            "totalData": 1,
-            "hasNextPage": false,
-            "hasPrevPage": false
+  "status": "success",
+  "message": "Predict Logs berhasil ditampilkan",
+  "data": {
+    "pagination": {
+      "currentPage": 1,
+      "limit": 10,
+      "totalPages": 1,
+      "totalData": 1,
+      "hasNextPage": false,
+      "hasPrevPage": false
+    },
+    "predictLogs": [
+      {
+        "id": "cmpthk5w90002f72t29fw3u24",
+        "userId": "cmpth1bmb...",
+        "foodName": "nasi padang",
+        "confidenceScore": 0.96,
+        "imageUrl": "https://rcbxqjotupicnsdobhat.supabase.co/...",
+        "portion": 1,
+        "createdAt": "2026-05-31T07:56:21.849Z",
+        "updatedAt": "2026-05-31T07:56:21.849Z",
+        "nutrition": {
+          "calorie": 664,
+          "protein": 70,
+          "carbohydrate": 70,
+          "fat": 15,
+          "water": null,
+          "fiber": null,
+          "labelCategory": null,
+          "originRegion": "Umum"
         },
-        "predictLogs": [
-            {
-                "id": "cmpthk5w90002f72t29fw3u24",
-                "userId": "cmpth1bmb000004kzatakdsfas4y",
-                "foodName": "nasi padang",
-                "confidenceScore": 0.96,
-                "imageUrl": "https://rcbxqjotupicnsdobhat.supabase.co/storage/v1/object/public/food-images/food/predict-logs-cmpth1bmb00003342342zatakfh4y-1780214181042",
-                "portion": 1,
-                "createdAt": "2026-05-31T07:56:21.849Z",
-                "updatedAt": "2026-05-31T07:56:21.849Z",
-                "nutrition": {
-                    "calorie": 664,
-                    "protein": 70,
-                    "carbohydrate": 70,
-                    "fat": 15,
-                    "water": null,
-                    "fiber": null,
-                    "labelCategory": null,
-                    "originRegion": "Umum"
-                },
-                "totalNutrition": {
-                    "calorie": 664,
-                    "protein": 70,
-                    "carbohydrate": 70,
-                    "fat": 15,
-                    "water": null,
-                    "fiber": null
-                }
-            }
-        ]
-    }
+        "totalNutrition": {
+          "calorie": 664,
+          "protein": 70,
+          "carbohydrate": 70,
+          "fat": 15,
+          "water": null,
+          "fiber": null
+        }
+      }
+    ]
+  }
 }
 ```
 
@@ -332,98 +404,109 @@ Mengambil riwayat prediksi makanan dari pengguna.
 ## 🍽️ 5. Meals
 
 ### Get Meals
-Mengambil daftar makanan yang telah dicatat pengguna.
-* **Method:** `GET`
-* **Endpoint:** `/meals`
-* **Auth Required:** Yes
-* **Query Parameters:**
-  * `page` (optional): Nomor halaman, default: 1
-  * `limit` (optional): Jumlah data per halaman, default: 10
-* **Success Response (200 OK):**
+Mengambil daftar makanan yang telah dicatat (dimakan) pengguna.
+
+- **Method:** `GET`
+- **Endpoint:** `/meals`
+- **Auth Required:** Yes
+
+**Query Parameters:**
+- `page` (optional): Nomor halaman, default `1`
+- `limit` (optional): Jumlah data per halaman, default `10`
+
+**Success Response (200 OK):**
 ```json
 {
-    "status": "success",
-    "message": "Meals berhasil ditampilkan",
-    "data": {
-        "pagination": {
-            "currentPage": 1,
-            "limit": 10,
-            "totalPages": 1,
-            "totalData": 1,
-            "hasNextPage": false,
-            "hasPrevPage": false
+  "status": "success",
+  "message": "Meals berhasil ditampilkan",
+  "data": {
+    "pagination": {
+      "currentPage": 1,
+      "limit": 10,
+      "totalPages": 1,
+      "totalData": 1,
+      "hasNextPage": false,
+      "hasPrevPage": false
+    },
+    "meals": [
+      {
+        "id": "cmpti055x000204l5r96bn1yo",
+        "userId": "cmpth1bmb...",
+        "predictLogId": null,
+        "mealType": "BREAKFAST",
+        "foodName": "Nasi padang",
+        "confidenceScore": null,
+        "imageUrl": "https://rcbxqjotupicnsdobhat.supabase.co/...",
+        "portion": 2,
+        "createdAt": "2026-05-31T08:08:47.397Z",
+        "updatedAt": "2026-05-31T08:08:47.397Z",
+        "nutrition": {
+          "calorie": 500,
+          "protein": 100,
+          "carbohydrate": 200,
+          "fat": 100,
+          "water": null,
+          "fiber": null,
+          "labelCategory": null,
+          "originRegion": null
         },
-        "meals": [
-            {
-                "id": "cmpti055x000204l5r96bn1yo",
-                "userId": "cmpth1bmb000004kzatakfh4y",
-                "predictLogId": null,
-                "mealType": "BREAKFAST",
-                "foodName": "Nasi padang",
-                "confidenceScore": null,
-                "imageUrl": "https://rcbxqjotupicnsdobhat.supabase.co/storage/v1/object/public/food-images/food/-cmpth1bmb000004kzatakfh4y-1780214926329",
-                "portion": 2,
-                "createdAt": "2026-05-31T08:08:47.397Z",
-                "updatedAt": "2026-05-31T08:08:47.397Z",
-                "nutrition": {
-                    "calorie": 500,
-                    "protein": 100,
-                    "carbohydrate": 200,
-                    "fat": 100,
-                    "water": null,
-                    "fiber": null,
-                    "labelCategory": null,
-                    "originRegion": null
-                },
-                "totalNutrition": {
-                    "calorie": 1000,
-                    "protein": 200,
-                    "carbohydrate": 400,
-                    "fat": 200,
-                    "water": null,
-                    "fiber": null
-                }
-            }
-        ]
-    }
+        "totalNutrition": {
+          "calorie": 1000,
+          "protein": 200,
+          "carbohydrate": 400,
+          "fat": 200,
+          "water": null,
+          "fiber": null
+        }
+      }
+    ]
+  }
 }
 ```
 
 ### Create Meal
-Mencatat konsumsi makanan baru.
-* **Method:** `POST`
-* **Endpoint:** `/meals`
-* **Auth Required:** Yes
-* **Content-Type:** `multipart/form-data`
-* **Request Body:**
-  * `image` (optional): File gambar makanan (JPG/PNG/JPEG)
-  * `foodName` (required): Nama makanan (string)
-  * `mealType` (required): Waktu makan ('BREAKFAST', 'LUNCH', 'DINNER', 'SNACK')
-  * `portion` (optional): Porsi makanan (number, default 1.0)
-  * `calorie` (required): Total kalori (number)
-  * `protein` (required): Total protein (number)
-  * `carbohydrate` (required): Total karbohidrat (number)
-  * `fat` (required): Total lemak (number)
-  * `water` (optional): Total air (number)
-  * `fiber` (optional): Total serat (number)
-  * `predictLogId` (optional): ID dari log prediksi jika berasal dari scan AI (string)
-  * `confidentScore` (optional): Skor confidence jika dari AI (number 0-1)
+Mencatat konsumsi makanan baru ke dalam jurnal.
+
+- **Method:** `POST`
+- **Endpoint:** `/meals`
+- **Auth Required:** Yes
+- **Content-Type:** `multipart/form-data`
+
+**Request Body:**
+- `image` (optional): File gambar makanan (JPG/PNG/JPEG)
+- `foodName` (required): Nama makanan (string)
+- `mealType` (required): Waktu makan (`BREAKFAST`, `LUNCH`, `DINNER`, `SNACK`)
+- `portion` (optional): Porsi makanan (number, default `1.0`)
+- `servingSizeG` (optional): Berat makanan per porsi dalam gram (number)
+- `servingDescription` (optional): Deskripsi porsi makanan (string, cth: "1 Porsi")
+- `calorie` (required): Total kalori (number)
+- `protein` (required): Total protein (number)
+- `carbohydrate` (required): Total karbohidrat (number)
+- `fat` (required): Total lemak (number)
+- `water` (optional): Total air (number)
+- `fiber` (optional): Total serat (number)
+- `predictLogId` (optional): ID dari log prediksi jika berasal dari AI (string)
+- `confidentScore` (optional): Skor confidence jika dari AI (number 0-1)
 
 ### Update Meal
-Memperbarui catatan makanan yang ada.
-* **Method:** `PUT`
-* **Endpoint:** `/meals/:id`
-* **Auth Required:** Yes
-* **Content-Type:** `multipart/form-data`
-* **Request Body:**
-  * Sama seperti **Create Meal** di atas.
+Memperbarui catatan makanan yang sudah ada.
+
+- **Method:** `PUT`
+- **Endpoint:** `/meals/:id`
+- **Auth Required:** Yes
+- **Content-Type:** `multipart/form-data`
+
+**Request Body:**
+*Sama seperti **Create Meal** di atas.*
 
 ### Delete Meal
 Menghapus catatan makanan berdasarkan ID.
-* **Method:** `DELETE`
-* **Endpoint:** `/meals/:id`
-* **Auth Required:** Yes
-* **Success Response (200 OK):**
+
+- **Method:** `DELETE`
+- **Endpoint:** `/meals/:id`
+- **Auth Required:** Yes
+
+**Success Response (200 OK):**
 ```json
 {
   "status": "success",
@@ -431,59 +514,51 @@ Menghapus catatan makanan berdasarkan ID.
 }
 ```
 
-### Get Recomendation Meals
+### Get Recommendation Meals
 Meminta rekomendasi makanan berdasarkan sisa kuota kalori dan kalori makanan yang baru ditambahkan.
-* **Method:** `GET`
-* **Endpoint:** `/meals/recomendations`
-* **Auth Required:** Yes
-* **Response Query:**
-  *  sisaKuota : number       // sisa Kuota kalori harian
-  *  kaloriMakanan : number   // kalori makanan yang baru ditambahkan
 
+- **Method:** `GET`
+- **Endpoint:** `/meals/recomendations`
+- **Auth Required:** Yes
 
-* **Success Response (200 OK):**
+**Query Parameters:**
+- `sisaKuota` (number): Sisa kuota kalori harian
+- `kaloriMakanan` (number): Kalori makanan yang baru ditambahkan
 
+**Success Response (200 OK):**
 ```json
 {
-    "status": "success",
-    "message": "Rekomendasi meal berhasil ditampilkan",
-    "data": {
-        "meals": {
-            "dataAnalysis": {
-                "remainingUserQuota": 1000,
-                "calorieTarget": 2000,
-                "recentMealCalorie": 500,
-                "selectedLabelCategory": 1,
-                "categoryName": "Serat Tinggi & Kalori Sedang"
-            },
-            "fruitRecommendations": [
-                {
-                    "name": "Sirsak",
-                    "calories": 65,
-                    "protein": 1,
-                    "carbohydrate": 16.3,
-                    "fat": 0.3,
-                    "water": 81.7
-                },
-                {
-                    "name": "Menteng",
-                    "calories": 65,
-                    "protein": 1.7,
-                    "carbohydrate": 16.1,
-                    "fat": 0.3,
-                    "water": 79
-                },
-                {
-                    "name": "Mangga golek",
-                    "calories": 63,
-                    "protein": 0.5,
-                    "carbohydrate": 16.7,
-                    "fat": 0.2,
-                    "water": 82.2
-                }
-            ]
+  "status": "success",
+  "message": "Rekomendasi meal berhasil ditampilkan",
+  "data": {
+    "meals": {
+      "dataAnalysis": {
+        "remainingUserQuota": 1000,
+        "calorieTarget": 2000,
+        "recentMealCalorie": 500,
+        "selectedLabelCategory": 1,
+        "categoryName": "Serat Tinggi & Kalori Sedang"
+      },
+      "fruitRecommendations": [
+        {
+          "name": "Sirsak",
+          "calories": 65,
+          "protein": 1,
+          "carbohydrate": 16.3,
+          "fat": 0.3,
+          "water": 81.7
+        },
+        {
+          "name": "Menteng",
+          "calories": 65,
+          "protein": 1.7,
+          "carbohydrate": 16.1,
+          "fat": 0.3,
+          "water": 79
         }
+      ]
     }
+  }
 }
 ```
 
@@ -493,10 +568,12 @@ Meminta rekomendasi makanan berdasarkan sisa kuota kalori dan kalori makanan yan
 
 ### Get Daily Summary
 Mengambil ringkasan total nutrisi harian pengguna yang sedang login.
-* **Method:** `GET`
-* **Endpoint:** `/nutrition/daily-summary`
-* **Auth Required:** Yes
-* **Success Response (200 OK):**
+
+- **Method:** `GET`
+- **Endpoint:** `/nutrition/daily-summary`
+- **Auth Required:** Yes
+
+**Success Response (200 OK):**
 ```json
 {
   "status": "success",
@@ -514,76 +591,41 @@ Mengambil ringkasan total nutrisi harian pengguna yang sedang login.
 }
 ```
 
-# Get Weekly Summary 
+### Get Weekly Summary 
 Mengambil ringkasan total nutrisi mingguan pengguna yang sedang login.
-* **Method:** `GET`
-* **Endpoint:** `/nutrition/weekly-summary`
-* **Auth Required:** Yes
-* **Success Response (200 OK):**
+
+- **Method:** `GET`
+- **Endpoint:** `/nutrition/weekly-summary`
+- **Auth Required:** Yes
+
+**Success Response (200 OK):**
 ```json
 {
-    "status": "success",
-    "message": "Ringkasan konsumsi grafik mingguan berhasil dimuat",
-    "data": {
-        "nutrition": [
-            {
-                "date": "2026-05-27",
-                "dayName": "Kamis",
-                "calorie": 0,
-                "protein": 0,
-                "carbohydrate": 0,
-                "fat": 0
-            },
-            {
-                "date": "2026-05-28",
-                "dayName": "Jumat",
-                "calorie": 0,
-                "protein": 0,
-                "carbohydrate": 0,
-                "fat": 0
-            },
-            {
-                "date": "2026-05-29",
-                "dayName": "Sabtu",
-                "calorie": 0,
-                "protein": 0,
-                "carbohydrate": 0,
-                "fat": 0
-            },
-            {
-                "date": "2026-05-30",
-                "dayName": "Minggu",
-                "calorie": 500,
-                "protein": 100,
-                "carbohydrate": 200,
-                "fat": 100
-            },
-            {
-                "date": "2026-05-31",
-                "dayName": "Senin",
-                "calorie": 1000,
-                "protein": 200,
-                "carbohydrate": 400,
-                "fat": 200
-            },
-            {
-                "date": "2026-06-01",
-                "dayName": "Selasa",
-                "calorie": 0,
-                "protein": 0,
-                "carbohydrate": 0,
-                "fat": 0
-            },
-            {
-                "date": "2026-06-02",
-                "dayName": "Rabu",
-                "calorie": 1000,
-                "protein": 200,
-                "carbohydrate": 400,
-                "fat": 200
-            }
-        ]
-    }
+  "status": "success",
+  "message": "Ringkasan konsumsi grafik mingguan berhasil dimuat",
+  "data": {
+    "nutrition": [
+      {
+        "date": "2026-05-30",
+        "dayName": "Minggu",
+        "calorie": 500.00,
+        "protein": 100.00,
+        "carbohydrate": 200.00,
+        "fat": 100.00,
+        "water": 0.00,
+        "fiber": 0.00
+      },
+      {
+        "date": "2026-05-31",
+        "dayName": "Senin",
+        "calorie": 1000.00,
+        "protein": 200.00,
+        "carbohydrate": 400.00,
+        "fat": 200.00,
+        "water": 0.00,
+        "fiber": 0.00
+      }
+    ]
+  }
 }
-
 ```
