@@ -35,5 +35,5 @@ export const putMealPayloadSchema = Joi.object({
 });
 
 export const getRecommendationMealsQuerySchema = Joi.object({
-   recentMealCalorie: Joi.number().positive().required()
+    recentMealCalorie: Joi.number().positive().required()
 });

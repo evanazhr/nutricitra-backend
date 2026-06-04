@@ -182,6 +182,20 @@ export const getRecomendationMeals = async (req, res, next) => {
 
         const remainingUserQuota = calorieTarget - calorieConsumed;
 
+        if (remainingUserQuota <= 0) {
+            return response(res, 200, "Rekomendasi meal tidak ditemukan", {
+                meals: {
+                    dataAnalysis: {
+                        remainingUserQuota: 0,
+                        calorieTarget: calorieTarget,
+                        recentMealCalorie: Number(recentMealCalorie),
+                        selectedLabelCategory: null,
+                        categoryName: null,
+                    },
+                    fruitRecommendations: []
+                }
+            });
+        }
 
         const mealResponse = await axios.post(process.env.RECOMENDATION_MEAL_API_URL, {
             sisa_kuota: remainingUserQuota,
