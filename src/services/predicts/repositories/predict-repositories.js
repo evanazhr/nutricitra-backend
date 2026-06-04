@@ -61,6 +61,23 @@ class PredictRepositories {
       }
     });
   }
+
+  async getPredictLogById(userId, id) {
+    return await this.prisma.predictLog.findFirst({
+      where: {
+        userId: userId,
+        id: id
+      }
+    });
+  }
+
+  async deletePredictLog(id) {
+    return await this.prisma.predictLog.delete({
+      where: {
+        id: id
+      }
+    });
+  }
 }
 
 export default new PredictRepositories();

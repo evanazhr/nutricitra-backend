@@ -108,3 +108,29 @@ export const getPredictLogs = async (req, res, next) => {
   }
 };
 
+
+export const deletePredictLog = async (req, res, next) => {
+  try {
+    const { userId } = req.user;
+    const { id } = req.params;
+
+    const predictLog = await PredictRepositories.getPredictLogById(userId, id);
+
+    if (!predictLog) {
+      return next(new NotFoundError("Predict Log tidak ditemukan"));
+    }
+
+    const { error: storageError } = await supabase.storage
+      .from('food-images')
+      .remove([`food/${predictLog.imageUrl.split('/').pop()}`]);
+
+    if (storageError) return next(new InvariantError("Gagal menghapus gambar dari storage"));
+
+    await PredictRepositories.deletePredictLog(id);
+
+    return response(res, 200, "Predict Log berhasil dihapus");
+
+  } catch (error) {
+    return next(error);
+  }
+};
