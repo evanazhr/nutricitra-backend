@@ -67,7 +67,7 @@ Berikut adalah langkah-langkah untuk menjalankan *project* ini secara lokal:
    Lakukan sinkronisasi schema aplikasi ke dalam *database* dan *generate* Prisma Client:
    ```bash
    npm run prisma:generate
-   npm run prisma:push
+   npm run prisma:deploy
    ```
 
 7. **Jalankan Aplikasi**

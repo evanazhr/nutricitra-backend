@@ -3,7 +3,7 @@ import rateLimit from 'express-rate-limit';
 // Global rate limiter
 export const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 menit
-  max: 60, // Batas maksimal 60 request per IP dalam 15 menit
+  max: 200, // Batas maksimal 60 request per IP dalam 15 menit
   message: {
     status: 'error',
     message: 'Terlalu banyak permintaan dari IP ini, silakan coba lagi setelah 15 menit'

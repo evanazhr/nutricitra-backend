@@ -54,9 +54,7 @@ class MealRepositories {
                 confidentScore: data.confidentScore ? Number(data.confidentScore) : null,
 
                 ...(data.predictLogId ? {
-                    predictLog: {
-                        connect: { id: data.predictLogId }
-                    }
+                    predictLogId: data.predictLogId
                 } : {})
             }
         });
@@ -84,9 +82,7 @@ class MealRepositories {
                 confidentScore: data.confidentScore ? Number(data.confidentScore) : null,
 
                 ...(data.predictLogId ? {
-                    predictLog: {
-                        connect: { id: data.predictLogId }
-                    }
+                    predictLogId: data.predictLogId
                 } : {})
             }
         });
