@@ -65,12 +65,13 @@ export const getWeeklySummary = async (req, res, next) => {
             const mealDateStr = toLocalDateString(meal.createdAt);
 
             if (weeklyMap[mealDateStr]) {
-                weeklyMap[mealDateStr].calorie += meal.totalCalorie || 0;
-                weeklyMap[mealDateStr].protein += meal.totalProtein || 0;
-                weeklyMap[mealDateStr].carbohydrate += meal.totalCarbohydrate || 0;
-                weeklyMap[mealDateStr].fat += meal.totalFat || 0;
-                weeklyMap[mealDateStr].water += meal.totalWater || 0;
-                weeklyMap[mealDateStr].fiber += meal.totalFiber || 0;
+                const portion = meal.portion || 1;
+                weeklyMap[mealDateStr].calorie += (meal.calorie || 0) * portion;
+                weeklyMap[mealDateStr].protein += (meal.protein || 0) * portion;
+                weeklyMap[mealDateStr].carbohydrate += (meal.carbohydrate || 0) * portion;
+                weeklyMap[mealDateStr].fat += (meal.fat || 0) * portion;
+                weeklyMap[mealDateStr].water += (meal.water || 0) * portion;
+                weeklyMap[mealDateStr].fiber += (meal.fiber || 0) * portion;
             }
         });
 

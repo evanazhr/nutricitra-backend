@@ -4,54 +4,55 @@ import response from "../../../utils/response.js";
 import UserRepositories from "../repositories/user-repositories.js";
 
 export const createUser = async (req, res, next) => {
-    const { email, fullname, password} = req.validated;
-    try {
-        const user = await UserRepositories.createUser({ email, fullname, password});
+  const { email, fullname, password } = req.validated;
+  try {
+    const user = await UserRepositories.createUser({ email, fullname, password });
 
-        if(!user) {
-            return next(new InvariantError('User gagal dibuat'));
-        }
-
-        return response(res, 201, 'User berhasil dibuat', user);
-    } catch (error) {
-        if(error.code === 'P2002') {
-            return next(new InvariantError('Email sudah terdaftar'));
-        }
-        return next(error);
+    if (!user) {
+      return next(new InvariantError('User gagal dibuat'));
     }
+
+    return response(res, 201, 'User berhasil dibuat', user);
+  } catch (error) {
+    if (error.code === 'P2002') {
+      return next(new InvariantError('Email sudah terdaftar'));
+    }
+    return next(error);
+  }
 }
 
 export const updateFullnameUser = async (req, res, next) => {
-    const { fullname } = req.validated;
-    const userId = req.user.id;
+  const { fullname } = req.validated;
+  const userId = req.user.id;
 
-    try {
-        const user = await UserRepositories.updateFullnameUser({userId, fullname});
-
-        if(!user) {
-            return next(new NotFoundError('User tidak ditemukan'));
-        }
-
-        return response(res, 200, "Nama lengkap berhasil diupdate", user);
-    } catch (error) {
-        return next(error);
+  try {
+    const existingUser = await UserRepositories.getUserById(userId);
+    if (!existingUser) {
+      return next(new NotFoundError('User tidak ditemukan'));
     }
+
+    const user = await UserRepositories.updateFullnameUser({ userId, fullname });
+
+    return response(res, 200, "Nama lengkap berhasil diupdate", user);
+  } catch (error) {
+    return next(error);
+  }
 }
 
 export const updateAvatar = async (req, res, next) => {
   try {
     const file = req.file;
-    const userId = req.user.id; 
+    const userId = req.user.id;
 
     if (!file) {
-        return next(new NotFoundError('File tidak ditemukan'));
+      return next(new NotFoundError('File tidak ditemukan'));
     }
 
     const fileName = `avatar-${userId}`;
     const filePath = `avatars/${fileName}`;
 
     const { data, error } = await supabase.storage
-      .from('avatar-images') 
+      .from('avatar-images')
       .upload(filePath, file.buffer, {
         contentType: file.mimetype,
         upsert: true
@@ -59,12 +60,17 @@ export const updateAvatar = async (req, res, next) => {
 
     if (error) throw error;
 
+    const existingUser = await UserRepositories.getUserById(userId);
+    if (!existingUser) {
+      return next(new NotFoundError('User tidak ditemukan'));
+    }
+
     const { data: { publicUrl } } = supabase.storage
       .from('avatar-images')
       .getPublicUrl(filePath);
 
-    const user = await UserRepositories.updateAvatar({userId, publicUrl});
-  
+    const user = await UserRepositories.updateAvatar({ userId, publicUrl });
+
     return response(res, 200, "Foto profile sudah diupdate", user)
 
   } catch (err) {

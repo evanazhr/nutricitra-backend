@@ -61,13 +61,6 @@ model PredictLog {
   labelCategory  String? @map("label_category")
   originRegion   String? @map("origin_region")
 
-  totalProtein      Float  @map("total_protein")
-  totalCalorie      Float  @map("total_calorie")
-  totalFat          Float  @map("total_fat")
-  totalCarbohydrate Float  @map("total_carbohydrate")
-  totalWater        Float? @map("total_water")
-  totalFiber        Float? @map("total_fiber")
-
   servingDescription String? @map("serving_description")
   servingSizeG       Float?  @map("serving_size_g")
 
@@ -132,13 +125,6 @@ model Meal {
 
   servingDescription String? @map("serving_description")
   servingSizeG       Float?  @map("serving_size_g")
-
-  totalProtein      Float  @map("total_protein")
-  totalCalorie      Float  @map("total_calorie")
-  totalFat          Float  @map("total_fat")
-  totalCarbohydrate Float  @map("total_carbohydrate")
-  totalWater        Float? @map("total_water")
-  totalFiber        Float? @map("total_fiber")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")

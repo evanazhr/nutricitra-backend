@@ -1,4 +1,4 @@
-# 📚 Nutri Citra API Documentation
+# 📚 Nutri Citra Backend Documentation
 
 Dokumentasi ini berisi daftar *endpoint* yang tersedia pada backend aplikasi Nutri Citra. 
 Secara *default*, semua *request* dan *response* menggunakan `Content-Type: application/json` kecuali disebutkan secara spesifik (misalnya, `multipart/form-data` untuk *upload file*).
@@ -20,20 +20,59 @@ Berikut adalah langkah-langkah untuk menjalankan *project* ini secara lokal:
    ```
 
 3. **Install dependensi**
+   Anda bisa menggunakan `npm` atau yang lain misalnya `pnpm`:
    ```bash
-   pnpm install
+   npm install
    ```
 
-4. **Konfigurasi Environment**
-   Buat file `.env` dari `.env.example`:
-   ```bash
-   cp .env.example .env
-   ```
-   *Pastikan Anda membaca file `.env` dan mengisi variabel environment yang dibutuhkan.*
+4. **Setup Database & Supabase Bucket**
+   Aplikasi ini membutuhkan database PostgreSQL dan juga **Supabase Storage** untuk menyimpan gambar makanan dan foto profil (avatar).
+   - Buat project baru di [Supabase](https://supabase.com).
+   - Buat **2 buah Bucket** dengan akses *Public* di menu Storage Supabase dengan nama:
+     1. `food-images` (untuk menyimpan log gambar hasil prediksi AI)
+     2. `avatar-images` (untuk menyimpan foto profil pengguna)
 
-5. **Jalankan Aplikasi**
+5. **Konfigurasi Environment (`.env`)**
+   Buat file `.env` di *root directory* dan isi variabel berikut (sesuaikan kredensial dengan project Anda):
+   
+   ```env
+   # Setup Server
+   NODE_ENV=development
+   PORT=3000
+   HOST=localhost
+
+   # Setup Database (Gunakan PostgreSQL URL, disarankan dari Supabase)
+   DATABASE_URL=
+
+   # Jika menggunakan Supabase tambahkan direct urlnya juga
+   DIRECT_URL=
+
+   # Supabase Storage Keys
+   SUPABASE_URL=https://[PROJECT-REF].supabase.co
+   SUPABASE_SERVICE_ROLE_KEY=eyJhbG... (Gunakan Service Role Secret Key dari menu API Setting Supabase)
+
+   # JWT Token Secret (Bebas menggunakan random hash generator)
+   ACCESS_TOKEN_KEY=your_super_secret_access_token_key_here
+   REFRESH_TOKEN_KEY=your_super_secret_refresh_token_key_here
+
+   # URL Model Machine Learning Eksternal API
+   PREDICT_API_URL=
+   RECOMENDATION_MEAL_API_URL=
+
+   # (Opsional) URL Frontend untuk pembatasan CORS
+   FRONTEND_URL=http://localhost:5173
+   ```
+
+6. **Generate dan Sinkronisasi Prisma Schema**
+   Lakukan sinkronisasi schema aplikasi ke dalam *database* dan *generate* Prisma Client:
    ```bash
-   pnpm run dev
+   npm run prisma:generate
+   npm run prisma:push
+   ```
+
+7. **Jalankan Aplikasi**
+   ```bash
+   npm run start
    ```
 
 ---
@@ -73,7 +112,6 @@ Melakukan login untuk mendapatkan *access token* dan *refresh token*.
   "message": "Authentication berhasil ditambahkan",
   "data": {
     "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6...",
-    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6..."
   }
 }
 ```
@@ -193,9 +231,9 @@ Membuat profil kesehatan pengguna baru.
   "weight": 65,
   "age": 20,
   "gender": "male",
-  "calorieTarget": 2000,
+  "calorieTarget": 2500,
   "proteinTarget": 120,
-  "carbohydrateTarget": 200,
+  "carbohydrateTarget": 101,
   "fatTarget": 100
 }
 ```
@@ -210,21 +248,31 @@ Mengambil profil kesehatan pengguna yang sedang login.
 **Success Response (200 OK):**
 ```json
 {
-  "status": "success",
-  "data": {
-    "profile": {
-      "userId": "uuid-string-here",
-      "height": 175,
-      "weight": 65,
-      "age": 20,
-      "gender": "male",
-      "calorieTarget": 2000,
-      "proteinTarget": 120,
-      "carbohydrateTarget": 200,
-      "fatTarget": 100,
-      "isProfileComplete": true
+    "status": "success",
+    "message": "Profile berhasil diambil",
+    "data": {
+        "user": {
+            "id": "user-uuid-here",
+            "email": "jhon@example.com",
+            "fullname": "Jhon Doe",
+            "avatarUrl": "https://rcbxqjotupicnsdobhat.supabase.co/storage/v1/object/public/avatar-images/avatars/...",
+            "totalScans": 14,
+            "height": 175,
+            "weight": 65,
+            "bmi": 21.2,
+            "age": 20,
+            "gender": "male",
+            "pregnancyTrimester": 0,
+            "breastfeedingStage": 0,
+            "calorieTarget": 2500,
+            "carbohydrateTarget": 101,
+            "proteinTarget": 120,
+            "fatTarget": 100,
+            "createdAt": "2026-05-30T10:06:22.484Z",
+            "updatedAt": "2026-06-03T21:22:05.839Z",
+            "isProfileComplete": true
+        }
     }
-  }
 }
 ```
 
@@ -301,7 +349,7 @@ Mengunggah gambar makanan untuk diprediksi menggunakan model *Machine Learning*.
 - **Content-Type:** `multipart/form-data`
 
 **Request Body:**
-- `file`: File gambar makanan (JPG/PNG/JPEG)
+- `file`: File gambar makanan (JPG/PNG/JPEG/webp)
 
 **Success Response (200 OK):**
 ```json
@@ -344,7 +392,7 @@ Mengunggah gambar makanan untuk diprediksi menggunakan model *Machine Learning*.
 Mengambil riwayat prediksi makanan dari pengguna.
 
 - **Method:** `GET`
-- **Endpoint:** `/predict`
+- **Endpoint:** `/predict?page=1&limit=10`
 - **Auth Required:** Yes
 
 **Query Parameters:**
@@ -407,7 +455,7 @@ Mengambil riwayat prediksi makanan dari pengguna.
 Mengambil daftar makanan yang telah dicatat (dimakan) pengguna.
 
 - **Method:** `GET`
-- **Endpoint:** `/meals`
+- **Endpoint:** `/meals?page=1&limit=10`
 - **Auth Required:** Yes
 
 **Query Parameters:**
@@ -601,31 +649,81 @@ Mengambil ringkasan total nutrisi mingguan pengguna yang sedang login.
 **Success Response (200 OK):**
 ```json
 {
-  "status": "success",
-  "message": "Ringkasan konsumsi grafik mingguan berhasil dimuat",
-  "data": {
-    "nutrition": [
-      {
-        "date": "2026-05-30",
-        "dayName": "Minggu",
-        "calorie": 500.00,
-        "protein": 100.00,
-        "carbohydrate": 200.00,
-        "fat": 100.00,
-        "water": 0.00,
-        "fiber": 0.00
-      },
-      {
-        "date": "2026-05-31",
-        "dayName": "Senin",
-        "calorie": 1000.00,
-        "protein": 200.00,
-        "carbohydrate": 400.00,
-        "fat": 200.00,
-        "water": 0.00,
-        "fiber": 0.00
-      }
-    ]
-  }
+    "status": "success",
+    "message": "Ringkasan konsumsi grafik mingguan berhasil dimuat",
+    "data": {
+        "nutrition": [
+          {
+              "date": "2026-05-29",
+              "dayName": "Jumat",
+              "calorie": 1950,
+              "protein": 135.0,
+              "carbohydrate": 210.0,
+              "fat": 63.3,
+              "water": 2500,
+              "fiber": 25
+          },
+          {
+              "date": "2026-05-30",
+              "dayName": "Sabtu",
+              "calorie": 2100,
+              "protein": 140.0,
+              "carbohydrate": 230.0,
+              "fat": 68.8,
+              "water": 2800,
+              "fiber": 28
+          },
+          {
+              "date": "2026-05-31",
+              "dayName": "Minggu",
+              "calorie": 1780,
+              "protein": 120.5,
+              "carbohydrate": 185.0,
+              "fat": 62.0,
+              "water": 2200,
+              "fiber": 22
+          },
+          {
+              "date": "2026-06-01",
+              "dayName": "Senin",
+              "calorie": 2050,
+              "protein": 142.0,
+              "carbohydrate": 220.0,
+              "fat": 66.8,
+              "water": 2600,
+              "fiber": 27
+          },
+          {
+              "date": "2026-06-02",
+              "dayName": "Selasa",
+              "calorie": 2200,
+              "protein": 150.0,
+              "carbohydrate": 245.0,
+              "fat": 68.8,
+              "water": 3000,
+              "fiber": 30
+          },
+          {
+              "date": "2026-06-03",
+              "dayName": "Rabu",
+              "calorie": 1980,
+              "protein": 138.5,
+              "carbohydrate": 212.0,
+              "fat": 64.2,
+              "water": 2700,
+              "fiber": 24
+          },
+          {
+              "date": "2026-06-04",
+              "dayName": "Kamis",
+              "calorie": 2300,
+              "protein": 155.0,
+              "carbohydrate": 255.5,
+              "fat": 73.0,
+              "water": 3200,
+              "fiber": 31
+          }
+      ]
+    }
 }
 ```

@@ -26,69 +26,66 @@ class MealRepositories {
         });
     }
 
-    async createMeal({ userId, foodName, imageUrl, mealType, portion, predictLogId, fat, carbohydrate, protein, calorie, water, fiber, confidentScore, servingSizeG, servingDescription }) {
+    async getMealById(userId, mealId) {
+        return await this.prisma.meal.findFirst({
+            where: {
+                id: mealId,
+                userId: userId
+            }
+        });
+    }
+
+    async createMeal(data) {
         return await this.prisma.meal.create({
             data: {
-                userId,
-                foodName,
-                imageUrl,
-                mealType,
-                portion: Number(portion),
-                fat: Number(fat),
-                carbohydrate: Number(carbohydrate),
-                protein: Number(protein),
-                calorie: Number(calorie),
-                water: water != null ? Number(water) : null,
-                fiber: fiber != null ? Number(fiber) : null,
-                servingSizeG: servingSizeG != null ? Number(servingSizeG) : null,
-                servingDescription: servingDescription || null,
-                confidentScore: confidentScore ? Number(confidentScore) : null,
-                totalCalorie: Number(calorie) * Number(portion),
-                totalCarbohydrate: Number(carbohydrate) * Number(portion),
-                totalFat: Number(fat) * Number(portion),
-                totalProtein: Number(protein) * Number(portion),
-                totalWater: water != null ? Number(water) * Number(portion) : null,
-                totalFiber: fiber != null ? Number(fiber) * Number(portion) : null,
+                userId: data.userId,
+                foodName: data.foodName,
+                imageUrl: data.imageUrl,
+                mealType: data.mealType,
+                portion: Number(data.portion),
+                fat: Number(data.fat),
+                carbohydrate: Number(data.carbohydrate),
+                protein: Number(data.protein),
+                calorie: Number(data.calorie),
+                water: data.water != null ? Number(data.water) : null,
+                fiber: data.fiber != null ? Number(data.fiber) : null,
+                servingSizeG: data.servingSizeG != null ? Number(data.servingSizeG) : null,
+                servingDescription: data.servingDescription || null,
+                confidentScore: data.confidentScore ? Number(data.confidentScore) : null,
 
-                ...(predictLogId ? {
+                ...(data.predictLogId ? {
                     predictLog: {
-                        connect: { id: predictLogId }
+                        connect: { id: data.predictLogId }
                     }
                 } : {})
             }
         });
     }
 
-    async updateMeal({ userId, mealId, foodName, imageUrl, mealType, portion, predictLogId, fat, carbohydrate, protein, calorie, water, fiber, confidentScore, servingSizeG, servingDescription }) {
+    async updateMeal(userId, mealId, data) {
         return await this.prisma.meal.update({
             where: {
                 id: mealId,
                 userId: userId
             },
             data: {
-                foodName,
-                imageUrl,
-                mealType,
-                portion: Number(portion),
-                fat: Number(fat),
-                carbohydrate: Number(carbohydrate),
-                protein: Number(protein),
-                calorie: Number(calorie),
-                water: water != null ? Number(water) : null,
-                fiber: fiber != null ? Number(fiber) : null,
-                servingSizeG: servingSizeG != null ? Number(servingSizeG) : null,
-                servingDescription: servingDescription || null,
-                confidentScore: confidentScore ? Number(confidentScore) : null,
-                totalCalorie: Number(calorie) * Number(portion),
-                totalCarbohydrate: Number(carbohydrate) * Number(portion),
-                totalFat: Number(fat) * Number(portion),
-                totalProtein: Number(protein) * Number(portion),
-                totalWater: water != null ? Number(water) * Number(portion) : null,
-                totalFiber: fiber != null ? Number(fiber) * Number(portion) : null,
+                foodName: data.foodName,
+                imageUrl: data.imageUrl,
+                mealType: data.mealType,
+                portion: Number(data.portion),
+                fat: Number(data.fat),
+                carbohydrate: Number(data.carbohydrate),
+                protein: Number(data.protein),
+                calorie: Number(data.calorie),
+                water: data.water != null ? Number(data.water) : null,
+                fiber: data.fiber != null ? Number(data.fiber) : null,
+                servingSizeG: data.servingSizeG != null ? Number(data.servingSizeG) : null,
+                servingDescription: data.servingDescription || null,
+                confidentScore: data.confidentScore ? Number(data.confidentScore) : null,
 
-                ...(predictLogId ? {
+                ...(data.predictLogId ? {
                     predictLog: {
-                        connect: { id: predictLogId }
+                        connect: { id: data.predictLogId }
                     }
                 } : {})
             }

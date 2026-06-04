@@ -5,7 +5,7 @@ import response from "../../../utils/response.js";
 import MealRepositories from "../repositories/meal-repositories.js";
 import NutritionRepositories from "../../nutrition/repositories/nutrition-repositories.js";
 import ProfileRepositories from "../../profiles/repositories/profile-repositories.js";
-import InvariantError from "../../../exceptions/invariant-error.js";
+import { InvariantError, NotFoundError } from "../../../exceptions/index.js";
 
 export const getMeals = async (req, res, next) => {
     const userId = req.user.id;
@@ -45,9 +45,9 @@ export const getMeals = async (req, res, next) => {
 
 export const createMeal = async (req, res, next) => {
     const userId = req.user?.id;
-    const { foodName, mealType, portion, imageUrl, fat, carbohydrate, protein, calorie, water, fiber, confidentScore, predictLogId, servingSizeG, servingDescription } = req.validated;
+    const { imageUrl } = req.validated;
     const imageFile = req.file;
-    
+
     try {
         let finalImageUrl = imageUrl || null;
 
@@ -70,14 +70,19 @@ export const createMeal = async (req, res, next) => {
             finalImageUrl = publicUrl;
         }
 
+        const mealData = {
+            userId,
+            ...req.validated,
+            imageUrl: finalImageUrl
+        };
 
-        const meal = await MealRepositories.createMeal({ userId, foodName, mealType, portion, imageUrl: finalImageUrl, fat, carbohydrate, protein, calorie, water, fiber, confidentScore: null, predictLogId: null, servingSizeG, servingDescription });
+        const meal = await MealRepositories.createMeal(mealData);
 
         if (!meal) {
             return next(new InvariantError("Gagal menambahkan meal"));
         }
 
-        return response(res, 201, "Meal berhasil ditambahkan", meal);
+        return response(res, 201, "Meal berhasil ditambahkan", formatMealResponse(meal));
     } catch (error) {
         return next(error);
     }
@@ -86,10 +91,14 @@ export const createMeal = async (req, res, next) => {
 export const updateMeal = async (req, res, next) => {
     const userId = req.user.id;
     const mealId = req.params.id;
-    const { foodName, mealType, portion, imageUrl, fat, carbohydrate, protein, calorie, water, fiber, confidentScore, predictLogId, servingSizeG, servingDescription } = req.validated;
+    const { imageUrl } = req.validated;
     const imageFile = req.file;
 
     try {
+        const existingMeal = await MealRepositories.getMealById(userId, mealId);
+        if (!existingMeal) {
+            return next(new NotFoundError("Meal tidak ditemukan"));
+        }
         let finalImageUrl = imageUrl || null;
 
         if (imageFile) {
@@ -111,13 +120,18 @@ export const updateMeal = async (req, res, next) => {
             finalImageUrl = publicUrl;
         }
 
-        const meal = await MealRepositories.updateMeal({ userId, mealId, foodName, mealType, portion, imageUrl: finalImageUrl, fat, carbohydrate, protein, calorie, water, fiber, confidentScore, predictLogId, servingSizeG, servingDescription });
+        const mealData = {
+            ...req.validated,
+            imageUrl: finalImageUrl
+        };
+
+        const meal = await MealRepositories.updateMeal(userId, mealId, mealData);
 
         if (!meal) {
             return next(new InvariantError("Gagal memperbarui meal"));
         }
 
-        return response(res, 200, "Meal berhasil diperbarui", meal);
+        return response(res, 200, "Meal berhasil diperbarui", formatMealResponse(meal));
     } catch (error) {
         return next(error);
     }
@@ -128,6 +142,10 @@ export const deleteMeal = async (req, res, next) => {
     const mealId = req.params.id;
 
     try {
+        const existingMeal = await MealRepositories.getMealById(userId, mealId);
+        if (!existingMeal) {
+            return next(new NotFoundError("Meal tidak ditemukan"));
+        }
         const meal = await MealRepositories.deleteMeal({ userId, mealId });
 
         if (!meal) {

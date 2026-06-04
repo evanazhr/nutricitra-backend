@@ -1,3 +1,4 @@
+import InvariantError from "../../../exceptions/invariant-error.js";
 import { supabase } from "../../../lib/supabase-client.js";
 import { formatPredictLogResponse } from "../../../utils/index.js";
 import response from "../../../utils/response.js";
@@ -10,7 +11,9 @@ export const predictImage = async (req, res, next) => {
   const portion = parseFloat(req.body.portion) || 1;
   try {
     const file = req.file;
-    if (!file) return res.status(400).json({ message: "No file uploaded" });
+    if (!file) {
+      return next(new InvariantError("File tidak diupload"));
+    }
 
     const formData = new FormData();
     formData.append("file", file.buffer, {
@@ -26,37 +29,10 @@ export const predictImage = async (req, res, next) => {
     const aiResult = result.results[0];
 
     if (!aiResult || !aiResult.food_name) {
-      return next(new Error("Tidak dapat memprediksi makanan dari gambar"));
+      return next(new InvariantError("Tidak dapat memprediksi makanan dari gambar"));
     }
 
     const foodNutrition = await PredictRepositories.getDataNutrition(aiResult.food_name);
-    // Satukan hasil mapping data dari AI dan data gizi lokal
-    const mappingResults = {
-      foodName: aiResult.food_name,
-      confidence: aiResult.confidence,
-      portion: portion,
-      nutrition: {
-        servingDescription: foodNutrition?.servingDescription || null,
-        servingSizeG: foodNutrition?.servingSizeG || null,
-        calorie: foodNutrition?.calorie || 0,
-        protein: foodNutrition?.protein || 0,
-        carbohydrate: foodNutrition?.carbohydrate || 0,
-        fat: foodNutrition?.fat || 0,
-        water: foodNutrition?.water || null,
-        fiber: foodNutrition?.fiber || null,
-        labelCategory: foodNutrition?.labelCategory || null,
-        originRegion: foodNutrition?.originRegion || null,
-      },
-      totalNutrition: {
-        calorie: (foodNutrition?.calorie || 0) * portion,
-        protein: (foodNutrition?.protein || 0) * portion,
-        carbohydrate: (foodNutrition?.carbohydrate || 0) * portion,
-        fat: (foodNutrition?.fat || 0) * portion,
-        water: foodNutrition?.water !== null ? foodNutrition.water * portion : null,
-        fiber: foodNutrition?.fiber !== null ? foodNutrition.fiber * portion : null,
-      }
-    }
-
     const fileName = `predict-logs-${userId}-${Date.now()}`;
     const filePath = `food/${fileName}`;
 
@@ -70,46 +46,31 @@ export const predictImage = async (req, res, next) => {
       .from('food-images')
       .getPublicUrl(filePath);
 
-    const predictLog = await PredictRepositories.createLog({
+    const logData = {
       userId,
-      foodName: mappingResults.foodName,
+      foodName: aiResult.food_name,
       imageUrl: publicUrl,
-      confidentScore: mappingResults.confidence,
-      portion: mappingResults.portion,
+      confidentScore: aiResult.confidence,
+      portion: portion,
+      servingSizeG: foodNutrition?.servingSizeG || null,
+      servingDescription: foodNutrition?.servingDescription || null,
+      calorie: foodNutrition?.calorie || 0,
+      protein: foodNutrition?.protein || 0,
+      carbohydrate: foodNutrition?.carbohydrate || 0,
+      fat: foodNutrition?.fat || 0,
+      water: foodNutrition?.water || null,
+      fiber: foodNutrition?.fiber || null,
+      labelCategory: foodNutrition?.labelCategory || null,
+      originRegion: foodNutrition?.originRegion || null
+    };
 
-      servingSizeG: mappingResults.nutrition.servingSizeG,
-      servingDescription: mappingResults.nutrition.servingDescription,
-
-      calorie: mappingResults.nutrition.calorie,
-      protein: mappingResults.nutrition.protein,
-      carbohydrate: mappingResults.nutrition.carbohydrate,
-      fat: mappingResults.nutrition.fat,
-      water: mappingResults.nutrition.water,
-      fiber: mappingResults.nutrition.fiber,
-
-      totalCalorie: mappingResults.totalNutrition.calorie,
-      totalProtein: mappingResults.totalNutrition.protein,
-      totalCarbohydrate: mappingResults.totalNutrition.carbohydrate,
-      totalFat: mappingResults.totalNutrition.fat,
-      totalWater: mappingResults.totalNutrition.water,
-      totalFiber: mappingResults.totalNutrition.fiber,
-
-      labelCategory: mappingResults.nutrition.labelCategory,
-      originRegion: mappingResults.nutrition.originRegion
-    });
-
-    const responseData = {
-      id: predictLog.id,
-      imageUrl: predictLog.imageUrl,
-      ...mappingResults,
-    }
+    const predictLog = await PredictRepositories.createLog(logData);
 
     return response(res, 200, "Prediksi dan mengirim log berhasil", {
-      predict: responseData,
+      predict: formatPredictLogResponse(predictLog),
     });
 
   } catch (error) {
-    console.error("FastAPI Error:", error.response?.data || error.message);
     return next(error);
   }
 };
@@ -128,7 +89,6 @@ export const getPredictLogs = async (req, res, next) => {
 
     const totalPages = Math.ceil(totalLogs / limit);
 
-    // format data predictLogs agar lebih rapi dan mudah dipahami di response
     const formattedLogs = predictLogs.map(log => formatPredictLogResponse(log));
 
     return response(res, 200, "Predict Logs berhasil ditampilkan", {

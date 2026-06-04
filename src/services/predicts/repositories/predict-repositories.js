@@ -56,14 +56,6 @@ class PredictRepositories {
         water: data.water,
         fiber: data.fiber,
 
-        // Gizi Total (Per Serving * Portion)
-        totalCalorie: data.totalCalorie,
-        totalProtein: data.totalProtein,
-        totalCarbohydrate: data.totalCarbohydrate,
-        totalFat: data.totalFat,
-        totalWater: data.totalWater,
-        totalFiber: data.totalFiber,
-
         labelCategory: data.labelCategory,
         originRegion: data.originRegion
       }

@@ -10,9 +10,6 @@ const app = express();
 
 app.use(express.json());
 
-// global limiter
-app.use(globalLimiter);
-
 const allowedOrigins = [
   // For Development
   'http://localhost:5173',
@@ -24,7 +21,8 @@ app.use(cors({
   origin: function (origin, callback) {
     if (!origin) return callback(null, true);
 
-    if (allowedOrigins.indexOf(origin) !== -1) {
+    // If "*" is in the array, allow all origins
+    if (allowedOrigins.includes("*") || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
       callback(new Error('Blocked by CORS policy'));
@@ -34,6 +32,10 @@ app.use(cors({
 }));
 
 app.set('trust proxy', 1);
+
+// global limiter
+app.use(globalLimiter);
+
 
 app.use('/', router);
 

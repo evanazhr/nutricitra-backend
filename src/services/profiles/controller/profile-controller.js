@@ -50,7 +50,7 @@ export const createProfile = async (req, res, next) => {
 
     return response(res, 201, "Profile berhasil dibuat", { user });
   } catch (error) {
-    if(error.code === 'P2002') {
+    if (error.code === 'P2002') {
       return next(new InvariantError("Profile untuk user ini sudah ada"));
     }
     return next(error);
@@ -85,11 +85,12 @@ export const updateProfile = async (req, res, next) => {
   const { height, weight, age, gender, calorieTarget, proteinTarget, carbohydrateTarget, fatTarget, pregnancyTrimester, breastfeedingStage } = req.validated;
 
   try {
-    const isUpdated = await ProfileRepositories.updateProfile({ userId, height, weight, age, gender, calorieTarget, proteinTarget, carbohydrateTarget, fatTarget, pregnancyTrimester, breastfeedingStage });
-
-    if (!isUpdated) {
+    const existingProfile = await ProfileRepositories.getProfile(userId);
+    if (!existingProfile) {
       return next(new NotFoundError("Profile tidak ditemukan"));
     }
+
+    await ProfileRepositories.updateProfile({ userId, height, weight, age, gender, calorieTarget, proteinTarget, carbohydrateTarget, fatTarget, pregnancyTrimester, breastfeedingStage });
 
     const profileData = await ProfileRepositories.getProfile(userId);
     const totalScans = await predictRepositories.countPredictLogs(userId); // FIX: Masukkan userId
