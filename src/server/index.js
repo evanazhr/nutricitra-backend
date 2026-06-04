@@ -10,26 +10,10 @@ const app = express();
 
 app.use(express.json());
 
-const allowedOrigins = [
-  // For Development
-  'http://localhost:5173',
-  // For Production
-  process.env.FRONTEND_URL
-].filter(Boolean);
-
 app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin) return callback(null, true);
-
-    // If "*" is in the array, allow all origins
-    if (allowedOrigins.includes("*") || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Blocked by CORS policy'));
-    }
-  },
+  origin: "*",
   credentials: true
-}));
+}))
 
 app.set('trust proxy', 1);
 
