@@ -50,7 +50,7 @@ export const predictImage = async (req, res, next) => {
       userId,
       foodName: aiResult.food_name,
       imageUrl: publicUrl,
-      confidentScore: aiResult.confidence,
+      confidenceScore: aiResult.confidence,
       portion: portion,
       servingSizeG: foodNutrition?.servingSizeG || null,
       servingDescription: foodNutrition?.servingDescription || null,

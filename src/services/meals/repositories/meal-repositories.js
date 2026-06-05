@@ -51,7 +51,7 @@ class MealRepositories {
                 fiber: data.fiber != null ? Number(data.fiber) : null,
                 servingSizeG: data.servingSizeG != null ? Number(data.servingSizeG) : null,
                 servingDescription: data.servingDescription || null,
-                confidentScore: data.confidentScore ? Number(data.confidentScore) : null,
+                confidenceScore: data.confidenceScore ? Number(data.confidenceScore) : null,
 
                 ...(data.predictLogId ? {
                     predictLogId: data.predictLogId
@@ -79,7 +79,7 @@ class MealRepositories {
                 fiber: data.fiber != null ? Number(data.fiber) : null,
                 servingSizeG: data.servingSizeG != null ? Number(data.servingSizeG) : null,
                 servingDescription: data.servingDescription || null,
-                confidentScore: data.confidentScore ? Number(data.confidentScore) : null,
+                confidenceScore: data.confidenceScore ? Number(data.confidenceScore) : null,
 
                 ...(data.predictLogId ? {
                     predictLogId: data.predictLogId

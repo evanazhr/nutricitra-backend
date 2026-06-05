@@ -43,7 +43,7 @@ class PredictRepositories {
         userId: data.userId,
         foodName: data.foodName,
         imageUrl: data.imageUrl,
-        confidentScore: data.confidentScore,
+        confidenceScore: data.confidenceScore,
         portion: data.portion,
 
         // Gizi Per Serving

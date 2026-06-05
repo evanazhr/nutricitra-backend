@@ -51,7 +51,7 @@ model PredictLog {
 
   foodName       String  @map("food_name")
   imageUrl       String  @map("image_url") @db.Text
-  confidentScore Float   @map("confident_score")
+  confidenceScore Float   @map("confidence_score")
   protein        Float
   calorie        Float
   fat            Float
@@ -109,7 +109,7 @@ model Meal {
 
   foodName       String  @map("food_name")
   imageUrl       String? @map("image_url")
-  confidentScore Float?  @map("confident_score")
+  confidenceScore Float?  @map("confidence_score")
 
   mealType String? @map("meal_type")
   portion  Float   @default(1.0)
