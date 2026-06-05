@@ -134,7 +134,7 @@ export const getDefaultAkgData = async (req, res, next) => {
     });
 
     if (!targetAkg || targetAkg.length === 0) {
-      return next(new NotFoundError("Data referensi target AKG gizi tidak ditemukan untuk profil yang diberikan")); s
+      return next(new NotFoundError("Data referensi target AKG gizi tidak ditemukan untuk profil yang diberikan"));
     }
 
     return response(res, 200, "Data referensi target AKG gizi berhasil diambil", { akg: targetAkg[0] });
