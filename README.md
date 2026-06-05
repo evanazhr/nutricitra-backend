@@ -1,6 +1,11 @@
 # 📚 Nutri Citra Backend Documentation
 
-Nutri Citra adalah platform aplikasi untuk mendeteksi nutrisi dan kalori pada makanan yang memanfaatkan teknologi AI. Nutri Citra juga dapat membantu Anda mencapai target kesehatan optimal melalui pemantauan makanan yang mudah dan praktis.
+Nutri Citra adalah platform berbasis web yang dirancang untuk membantu
+pengguna mengidentifikasi makanan dengan mengupload atau memfoto makanan
+yang kemudian akan diprediksi oleh model ai untuk dihitung berapa nutrisi,
+kalorinya, menghitung, dan memantau kandungan nutrisi serta kalori dari makanan
+secara cerdas dan praktis dan juga terdapat sistem rekomendasi buah untuk
+menyeimbangkan kalori harian pengguna.
 
 Link Website : https://nutri-citra-project-6eik.vercel.app
 
