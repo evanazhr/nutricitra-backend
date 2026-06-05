@@ -1,7 +1,8 @@
 # 📚 Nutri Citra Backend Documentation
 
-Dokumentasi ini berisi daftar *endpoint* yang tersedia pada backend aplikasi Nutri Citra. 
-Secara *default*, semua *request* dan *response* menggunakan `Content-Type: application/json` kecuali disebutkan secara spesifik (misalnya, `multipart/form-data` untuk *upload file*).
+Nutri Citra adalah platform aplikasi untuk mendeteksi nutrisi dan kalori pada makanan yang memanfaatkan teknologi AI. Nutri Citra juga dapat membantu Anda mencapai target kesehatan optimal melalui pemantauan makanan yang mudah dan praktis.
+
+Link Website : https://nutri-citra-project-6eik.vercel.app
 
 ---
 
@@ -56,6 +57,7 @@ Berikut adalah langkah-langkah untuk menjalankan *project* ini secara lokal:
    REFRESH_TOKEN_KEY=your_super_secret_refresh_token_key_here
 
    # URL Model Machine Learning Eksternal API
+   # Karena untuk model AInya kami sudah menggunakan fastAPI dan dideploy di hugging face, untuk mencoba aplikasi kami bisa mengakses lewat website yang sudah kami deploy 
    PREDICT_API_URL=
    RECOMENDATION_MEAL_API_URL=
 
@@ -85,8 +87,13 @@ Berikut adalah langkah-langkah untuk menjalankan *project* ini secara lokal:
 4. [Predicts](#-4-predicts)
 5. [Meals](#-5-meals)
 6. [Nutrition](#-6-nutrition)
+7. [Foods](#7-foods)
 
 ---
+
+Dokumentasi ini berisi daftar *endpoint* yang tersedia pada backend aplikasi Nutri Citra. 
+Secara *default*, semua *request* dan *response* menggunakan `Content-Type: application/json` kecuali disebutkan secara spesifik (misalnya, `multipart/form-data` untuk *upload file*).
+
 
 ## 🔐 1. Authentication
 
@@ -418,7 +425,7 @@ Mengambil riwayat prediksi makanan dari pengguna.
         "id": "cmpthk5w90002f72t29fw3u24",
         "userId": "cmpth1bmb...",
         "foodName": "nasi padang",
-        "confidentScore": 0.96,
+        "confidenceScore": 0.96,
         "imageUrl": "https://rcbxqjotupicnsdobhat.supabase.co/...",
         "portion": 1,
         "createdAt": "2026-05-31T07:56:21.849Z",
@@ -483,7 +490,7 @@ Mengambil daftar makanan yang telah dicatat (dimakan) pengguna.
         "predictLogId": null,
         "mealType": "BREAKFAST",
         "foodName": "Nasi padang",
-        "confidentScore": 0.96,
+        "confidenceScore": 0.96,
         "imageUrl": "https://rcbxqjotupicnsdobhat.supabase.co/...",
         "portion": 2,
         "createdAt": "2026-05-31T08:08:47.397Z",
@@ -534,7 +541,7 @@ Mencatat konsumsi makanan baru ke dalam jurnal.
 - `water` (optional): Total air (number)
 - `fiber` (optional): Total serat (number)
 - `predictLogId` (optional): ID dari log prediksi jika berasal dari AI (string)
-- `confidentScore` (optional): Skor confidence jika dari AI (number 0-1)
+- `confidenceScore` (optional): Skor confidence jika dari AI (number 0-1)
 
 ### Update Meal
 Memperbarui catatan makanan yang sudah ada.
@@ -724,6 +731,119 @@ Mengambil ringkasan total nutrisi mingguan pengguna yang sedang login.
               "fiber": 31
           }
       ]
+    }
+}
+```
+
+---
+
+## 7. Foods
+
+### Get Food List By name
+Mendapatkan list nama makanan dari nama makanan yang dicari
+
+- **Method:** `GET`
+- **Endpoint:** `/foods/search?q=[nama makanan]`
+- **Auth Required:** Yes
+- **Query Parameters:**
+    - `q` (string): Nama makanan
+
+**Success Response (200 OK):**
+```json
+{
+    "status": "success",
+    "message": "Berhasil mencari data makanan",
+    "data": {
+        "foods": [
+            {
+                "id": "cmq08r83300391u2thzdtvy3i",
+                "foodName": "Bakso Bakar",
+                "servingDescription": "1 Tusuk",
+                "servingSizeG": null,
+                "fat": 10.5,
+                "calorie": 174,
+                "protein": 11.25,
+                "carbohydrate": 8.03,
+                "water": null,
+                "fiber": null,
+                "labelCategory": null,
+                "originRegion": "Umum"
+            },
+            {
+                "id": "cmq08r83300361u2tk30a9abx",
+                "foodName": "Bakso Daging Sapi",
+                "servingDescription": "1 Porsi (108 g)",
+                "servingSizeG": 108,
+                "fat": 14.22,
+                "calorie": 218,
+                "protein": 13.4,
+                "carbohydrate": 8.18,
+                "water": null,
+                "fiber": null,
+                "labelCategory": null,
+                "originRegion": "Umum"
+            },
+            {
+                "id": "cmq08r83300371u2t4e78xyew",
+                "foodName": "Bakso dengan Saus",
+                "servingDescription": "1 Porsi (176 g)",
+                "servingSizeG": 176,
+                "fat": 21.61,
+                "calorie": 333,
+                "protein": 31.75,
+                "carbohydrate": 0.46,
+                "water": null,
+                "fiber": null,
+                "labelCategory": null,
+                "originRegion": "umum"
+            },
+            {
+                "id": "cmq08r83300381u2ts1zq8ct6",
+                "foodName": "Bakso Malang",
+                "servingDescription": "1 Porsi (400 g)",
+                "servingSizeG": 400,
+                "fat": 16.03,
+                "calorie": 404,
+                "protein": 24.04,
+                "carbohydrate": 40.08,
+                "water": null,
+                "fiber": null,
+                "labelCategory": null,
+                "originRegion": "umum"
+            }
+        ]
+    }
+}
+```
+
+### Get Food Nutrition
+Mendapatkan informasi kalori dan nutrisi dari suatu makanan dengan memasukkan nama makanan.
+
+- **Method:** `GET`
+- **Endpoint:** `/foods/:name`
+- **Auth Required:** Yes
+
+**Success Response (200 OK):**
+```json
+
+{
+    "status": "success",
+    "message": "Berhasil mengambil data nutrisi makanan",
+    "data": {
+        "food": {
+            "id": "cmq08r83300361u2tk30a9abx",
+            "foodName": "Bakso Daging Sapi",
+            "servingDescription": "1 Porsi (108 g)",
+            "servingSizeG": 108,
+            "fat": 14.22,
+            "calorie": 218,
+            "protein": 13.4,
+            "carbohydrate": 8.18,
+            "water": null,
+            "fiber": null,
+            "labelCategory": null,
+            "originRegion": "Umum"
+        }
     }
 }
 ```
