@@ -3,6 +3,7 @@ import { supabase } from "../../../lib/supabase-client.js";
 import { formatPredictLogResponse } from "../../../utils/index.js";
 import response from "../../../utils/response.js";
 import PredictRepositories from "../repositories/predict-repositories.js";
+import FoodRepositories from "../../foods/repositories/food-repositories.js";
 import axios from "axios";
 import FormData from "form-data";
 
@@ -32,7 +33,7 @@ export const predictImage = async (req, res, next) => {
       return next(new InvariantError("Tidak dapat memprediksi makanan dari gambar"));
     }
 
-    const foodNutrition = await PredictRepositories.getDataNutrition(aiResult.food_name);
+    const foodNutrition = await FoodRepositories.getDataNutrition(aiResult.food_name);
     const fileName = `predict-logs-${userId}-${Date.now()}`;
     const filePath = `food/${fileName}`;
 

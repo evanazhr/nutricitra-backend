@@ -19,6 +19,17 @@ class FoodRepositories {
       }
     });
   }
+
+  async getDataNutrition(foodName) {
+    return await this.prisma.foodDictionary.findFirst({
+      where: {
+        foodName: {
+          equals: foodName,
+          mode: 'insensitive'
+        }
+      }
+    });
+  }
 }
 
 export default new FoodRepositories();

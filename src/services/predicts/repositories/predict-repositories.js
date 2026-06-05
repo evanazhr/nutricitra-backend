@@ -18,16 +18,7 @@ class PredictRepositories {
     });
   }
 
-  async getDataNutrition(foodName) {
-    return await this.prisma.foodDictionary.findFirst({
-      where: {
-        foodName: {
-          equals: foodName,
-          mode: 'insensitive'
-        }
-      }
-    });
-  }
+
 
   async countPredictLogs(userId) {
     return await this.prisma.predictLog.count({
