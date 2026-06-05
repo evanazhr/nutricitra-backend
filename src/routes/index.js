@@ -5,6 +5,7 @@ import predictRouter from '../services/predicts/routes/index.js';
 import profileRouter from '../services/profiles/routes/index.js';
 import mealRouter from '../services/meals/routes/index.js';
 import NutritionRouter from '../services/nutrition/routes/index.js';
+import foodRouter from '../services/foods/routes/index.js';
 
 const router = Router();
 
@@ -14,5 +15,6 @@ router.use('/', predictRouter);
 router.use('/', profileRouter);
 router.use('/', mealRouter);
 router.use('/', NutritionRouter);
+router.use('/', foodRouter);
 
 export default router;
