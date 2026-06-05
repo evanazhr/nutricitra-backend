@@ -4,13 +4,24 @@ class NutritionRepositories {
     constructor() {
         this.prisma = prisma
     }
-    async getDailySummary(userId) {
+
+    _getWIBRange(daysOffset = 0) {
         const now = new Date();
+        
+        const year = now.getFullYear();
+        const month = now.getMonth();
+        const date = now.getDate() - daysOffset;
 
-        const startOfDay = new Date(now.setHours(0, 0, 0, 0));
+        const start = new Date(Date.UTC(year, month, date, 0 - 7, 0, 0, 0));
+        const end = new Date(Date.UTC(year, month, date, 23 - 7, 59, 59, 999));
 
-        const endOfDay = new Date(now.setHours(23, 59, 59, 999));
+        return { start, end };
+    }
 
+    async getDailySummary(userId) {
+        const {start : startOfDay, end : endOfDay } = this._getWIBRange(0);
+
+        // Ambil semua data makan user di hari ini
         const meals = await this.prisma.meal.findMany({
             where: {
                 userId: userId,
@@ -44,16 +55,9 @@ class NutritionRepositories {
     }
 
     async getWeeklySummary(userId) {
-        const now = new Date();
-
-        // Ambil awal hari dari 6 hari lalu (Total 7 hari termasuk hari ini)
-        const startOfPeriod = new Date(now);
-        startOfPeriod.setDate(now.getDate() - 6);
-        startOfPeriod.setHours(0, 0, 0, 0);
-
-        const endOfPeriod = new Date(now);
-        endOfPeriod.setHours(23, 59, 59, 999);
-
+        const {start : startOfPeriod} = this._getWIBRange(6);
+        const {end : endOfPeriod} = this._getWIBRange(0);
+      
         // Ambil semua data makan user dalam rentang 7 hari 
         const meals = await this.prisma.meal.findMany({
             where: {
